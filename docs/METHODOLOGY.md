@@ -134,15 +134,24 @@ W/D/L probabilities are obtained by summing the upper triangle, diagonal, and lo
 
 | Model | log-loss | RPS | top-1 |
 |---|---|---|---|
-| Full (xG + FIFA + form) | 0.873 | 0.161 | 67% |
-| FIFA-only | 0.873 | 0.162 | 67% |
-| Naive base-rate | 1.004 | 0.202 | 54% |
+| Full (xG + FIFA + form) | 0.8727 | 0.1606 | 67% |
+| FIFA-only | 0.8727 | 0.1618 | 67% |
+| Naive base-rate | — | 0.2019 | — |
 
 **The key finding, stated plainly:** on WC-only data (~2 games per team) the event-data model was **worse** than a plain FIFA-rank baseline by 3.0% RPS — it was fitting noise. Adding qualifier data (~10 games per team) **flipped the sign** to +0.7% RPS vs the FIFA baseline, and +20.5% vs naive.
 
-This is a clean demonstration of a thin-data failure: the failure was **predicted** (small sample → high variance), **measured** (the WC-only ablation), **fixed** (qualifier data pull), and **re-measured** (the full-corpus LOO). The delta over FIFA-only is modest and sits near the boundary of statistical significance on 52 matches, which is the honest thing to say (see §8).
+This is a clean demonstration of a thin-data failure: the failure was **predicted** (small sample → high variance), **measured** (the WC-only ablation), **fixed** (qualifier data pull), and **re-measured** (the full-corpus LOO).
 
-**Ratings smell test.** Spain #1, France #4 on the net-xG table; weakest are Gibraltar and Curacao — all plausible.
+**Bootstrap significance (10 000 resamples, paired, 95% CI):**
+
+- **Full vs Naive:** ΔRPS = −0.0413, 95% CI [−0.0777, −0.0061], P(Full better) = 0.99. The event-data pipeline is **statistically significantly** better than naive base-rates (+20.5% RPS, +13.0% log-loss).
+- **Full vs FIFA-only:** ΔRPS = −0.0012, 95% CI [−0.0090, +0.0062]. The interval straddles zero — the +0.7% edge is **not statistically distinguishable** from noise on 52 evaluation matches. A larger or rolling backtest would be needed to declare the event model definitively better than the FIFA prior alone.
+
+The honest summary: the pipeline is clearly better than guessing base-rates; whether per-team xG features beat the FIFA prior alone is an open question at this sample size.
+
+**Hyperparameter tuning.** A grid search over `alpha` (L2 strength) × `fifa_scale` (FIFA prior weight) confirms that the defaults (`alpha=0.05`, `fifa_scale=1.0`) are within 0.18% RPS of the best cell (rank 5/30). The surface is flat — defaults are validated, not over-tuned. See `tune.py` and `tune_alpha_fifa.png`.
+
+**Ratings smell test.** Spain #1, Argentina #2, England #3, France #4 on the net-xG table; weakest are Gibraltar and Curacao — all plausible.
 
 **Example prediction.** France vs Iraq: modeled λ = 2.48, μ = 0.52 → **France 79% / draw 16% / Iraq 5%**, modal score **2–0**. The hand-tuned reference model predicted France 90.6% — overconfident, partly because it applies FIFA strength as a multiplicative scaler that inflates the favourite's probability.
 
@@ -156,3 +165,7 @@ This is a clean demonstration of a thin-data failure: the failure was **predicte
 - **~2 WC games per team.** Even with qualifiers, World Cup tournament performance is still extrapolated from a small within-competition sample; form can shift between qualifiers and the tournament itself.
 - **No form decay.** The current model weights all matches equally regardless of recency. A time-discounting scheme (exponential decay on older matches) is the most obvious next step.
 - **Single xG model for all leagues.** Shot quality varies by competition level; a hierarchical xG model that partially pools across confederations could reduce bias.
+
+### Explored and rejected: shot-type xG features
+
+Adding `is_header` and `is_freekick` flags to the xG model was investigated. In the Sportradar trial feed, the `method` field on shot events is only populated on goal events (`score_change`); it is absent on `shot_on_target` and `shot_off_target` events. This means `is_header = 1` occurred exclusively on goals — a perfect predictor of `is_goal = 1` in the training data, a textbook label leak. The effect was visible immediately: CV AUC inflated to 0.719 and the model assigned an absurd xG of 0.957 to an 11-metre header. The feature was correctly discarded. The shipped xG model uses geometry only (distance + angle), with CV ROC-AUC 0.687 and perfect aggregate calibration (total xG = total goals = 633).

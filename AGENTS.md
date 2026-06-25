@@ -24,7 +24,7 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   and **+20.5% vs naive**. 67% top-1, 0.161 RPS.
 - Streamlit dashboard (`app/streamlit_app.py`), deploy-ready from a committed
   snapshot (`app/match_table.csv`).
-- 60-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
+- 74-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
   ruff-clean (line-length 120).
 
 ## Open items / next steps
@@ -37,7 +37,21 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
 - The +0.7% edge over FIFA-only is within sampling noise on 52 eval matches —
   more/better data is the path to a decisive result.
 - Biggest model misses are **under-predicted draws** (favorites dropping points,
-  e.g. Spain–Cape Verde) — a candidate modeling improvement.
+  e.g. Spain–Cape Verde, England–Ghana, Portugal–Congo DR) — a candidate modeling improvement.
+- **Bootstrap significance + hyperparameter tuning are done.** `build_eval.py` now
+  prints 95% CIs (Full vs Naive: significant; Full vs FIFA-only: not distinguishable
+  on 52 eval matches). `tune.py` maps the `alpha` × `fifa_scale` surface
+  (`tune_alpha_fifa.png`) — defaults are within 0.18% RPS of the global best, surface
+  is flat.
+
+### Explored and rejected
+
+- **Shot-type xG features (`is_header`, `is_freekick`):** the Sportradar trial feed
+  only populates the `method` field on goal events, never on non-goal shots — so
+  `is_header = 1` was a near-perfect label for `is_goal = 1` (leak). CV AUC inflated
+  to 0.719 and produced a 0.957 xG for an 11 m header. Geometry-only xG (distance +
+  angle) is the correct and shipped model. Do not reintroduce shot-type flags without
+  verifying that a non-trial Sportradar tier populates `method` on non-goal events.
 
 ## Setup
 
@@ -56,7 +70,7 @@ These still work because their inputs are committed:
 
 ```bash
 streamlit run app/streamlit_app.py   # dashboard — uses app/match_table.csv
-python3 -m pytest -q                  # 59/60 pass; 1 xG-calibration test skips w/o data
+python3 -m pytest -q                  # 73/74 pass; 1 xG-calibration test skips w/o data
 ruff check .                          # lint
 ```
 
