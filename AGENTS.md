@@ -25,12 +25,18 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
 - Streamlit dashboard (`app/streamlit_app.py`), deploy-ready from a committed
   snapshot (`app/match_table.csv`).
 - **Elo benchmark** (`footy/ratings/elo.py`, `build_elo.py`) — World-Football-style
-  Elo, leakage-free on the WC eval set. **Key finding:** Elo (RPS 0.1459, log-loss
-  0.8505) *edges* the Full xG model (0.1606 / 0.8727), because Elo learns from goals
-  in all 376 matches while the xG model discards the ~133 with no shot data. Not
-  significant (ΔRPS 95% CI [−0.0356, +0.0077], P(Elo better)=0.91); Full still wins
-  top-1 (67% vs 60%).
-- 101-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
+  Elo, leakage-free on the WC eval set. **Key finding:** Elo (RPS 0.1459) *edges* the
+  Full xG model (0.1606), because Elo learns from goals in all 376 matches while the
+  xG model discards the ~133 with no shot data.
+- **Ensemble = SHIPPED predictor** (`footy/ratings/ensemble.py`, `EnsemblePredictor`)
+  — 50/50 blend of the xG/Dixon-Coles W/D/L and the Elo W/D/L. **RPS 0.1491, log-loss
+  0.8395**; significantly beats the Full model (ΔRPS −0.0115, 95% CI [−0.0224, −0.0004],
+  P=0.98) and naive (P=0.99) — the project's first significant gain. `build_eval.py`,
+  `build_ratings.py`, and the dashboard all use it. The **scoreline grid stays
+  Dixon-Coles** (Elo has no grid); only the W/D/L blends. Top-1 dips slightly (65% vs
+  67%) — the usual calibration-vs-picks trade. To get pure xG behaviour, use
+  `DixonColesRatings` directly instead of `EnsemblePredictor`.
+- 117-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
   ruff-clean (line-length 120).
 
 ## Open items / next steps
@@ -44,11 +50,12 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   pre-match 1X2 odds covering internationals (needs a free self-serve `ODDSPAPI_API_KEY`
   in `.env`). Plan: match our fixtures to OddsPapi by team+date, convert to no-vig
   probabilities, compare model vs market vs Elo vs FIFA vs naive + a betting-ROI sim.
-- **Use Elo as the prior / ensemble** — Elo beating the xG model suggests the dynamic,
-  goal-informed Elo rating is a *better prior than static FIFA rank*. Swapping/augmenting
-  the `fifa` prior in `DixonColesRatings` with Elo (or ensembling the two) is the most
-  promising accuracy lever, and complements the `goals_fallback`/`sos_weighting` flags
-  (both validated, default off) that move in the same direction.
+- ✅ **DONE — Elo ensemble shipped** (see Current state). Elo-strength as the Dixon-Coles
+  prior also helped (RPS 0.1542) but wasn't significant alone; the 50/50 ensemble was, so
+  that shipped. `goals_fallback`/`sos_weighting` remain validated-but-off alternatives.
+- **Remaining accuracy ideas:** tune the ensemble blend weight (50/50 is unoptimized) or
+  weight by per-team data volume; a richer xG model via StatsBomb open data; a hierarchical
+  Bayesian rebuild for principled thin-data shrinkage.
 - The +0.7% edge over FIFA-only is within sampling noise on 52 eval matches —
   more/better data is the path to a decisive result.
 - Biggest model misses are **under-predicted draws** (favorites dropping points,

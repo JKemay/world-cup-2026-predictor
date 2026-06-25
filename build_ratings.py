@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from footy.config import DATA_DIR, PROJECT_ROOT  # noqa: E402
 from footy.features.matches import build_match_table  # noqa: E402
 from footy.ratings.dixon_coles import DixonColesRatings, grid_summary  # noqa: E402
+from footy.ratings.ensemble import EnsemblePredictor  # noqa: E402
 from footy.ratings.fifa import fifa_strength  # noqa: E402
 
 ALPHA = float(sys.argv[1]) if len(sys.argv) > 1 else 0.05      # L2 on team adjustments
@@ -91,6 +92,12 @@ def main():
     print(f"  outcome        : France {s['home_win']*100:.1f}%  draw {s['draw']*100:.1f}%"
           f"  Iraq {s['away_win']*100:.1f}%")
     print("  reference model: France 3-0, 90.6% / 7.2% / 2.2%")
+
+    # Ensemble W/D/L (Dixon-Coles + Elo, 50/50 blend)
+    ens = EnsemblePredictor(alpha=ALPHA, fifa=fifa, fifa_scale=FIFA_SCALE).fit(matches)
+    ew = ens.wdl("France", "Iraq")
+    print(f"\n  Ensemble W/D/L : France {ew[0]*100:.1f}%  draw {ew[1]*100:.1f}%  Iraq {ew[2]*100:.1f}%"
+          f"  (xG/DC + Elo, 50/50)")
 
     plot_grid(grid, "France", "Iraq", lam, mu, PROJECT_ROOT / "france_iraq_grid.png")
     print("\nSaved: data/processed/team_ratings.csv, france_iraq_grid.png")

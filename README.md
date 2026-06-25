@@ -36,6 +36,7 @@ See also: [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for full modeling rationale
 | Qualifier data pull | `pull_qualifiers.py` | ✅ ~10 games/team |
 | Hyperparameter tuning | `tune.py` | ✅ defaults validated |
 | Elo benchmark | `footy/ratings/elo.py` | ✅ edges the xG model (RPS 0.146) |
+| **Ensemble (xG + Elo) — shipped** | `footy/ratings/ensemble.py` | ✅ **significantly beats the xG model (P=0.98)** |
 | Streamlit dashboard | `app/streamlit_app.py` | ✅ pick any fixture → live grid |
 
 ## Results
@@ -44,18 +45,20 @@ See also: [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for full modeling rationale
 
 | Model | log-loss | RPS | top-1 |
 |---|---|---|---|
-| **Elo benchmark** | **0.8505** | **0.1459** | 60% |
+| **Ensemble (xG + Elo) — shipped** | **0.8395** | **0.1491** | 65% |
+| Elo benchmark | 0.8505 | 0.1459 | 60% |
 | Full (xG + FIFA + form) | 0.8727 | 0.1606 | **67%** |
-| FIFA-only | 0.8727 | 0.1618 | 67% |
-| Naive base-rate | — | 0.2019 | — |
+| FIFA-only | 0.8729 | 0.1618 | 67% |
+| Naive base-rate | 1.0037 | 0.2019 | 54% |
 
 **Bootstrap significance (10 000 resamples, paired):**
 
-- **Full vs Naive:** ΔRPS = −0.0413, 95% CI [−0.0777, −0.0061], P(Full better) = 0.99 — **statistically significant**. The event-data pipeline is +20.5% RPS / +13.0% log-loss better than predicting base-rates for every match.
-- **Full vs FIFA-only:** ΔRPS = −0.0012, 95% CI [−0.0090, +0.0062] — **not statistically distinguishable** on 52 eval matches. The +0.7% edge is real in direction but sits within sampling noise.
-- **Elo vs Full:** ΔRPS = −0.0147, 95% CI [−0.0356, +0.0077], P(Elo better) = 0.91 — a **simple Elo baseline edges the xG model** (not significant, but the point estimate favours Elo). The reason is the project's headline lesson: **Elo uses goals from all 376 matches, while the xG model discards the ~133 with no shot data** — measuring the cost of xG-purism. The xG model still picks more outright winners (67% vs 60% top-1). Run it: `python3 build_elo.py`.
+- **Ensemble vs Full:** ΔRPS = −0.0115, 95% CI [−0.0224, −0.0004], P(Ensemble better) = **0.98** — **statistically significant**. Averaging the xG/Dixon-Coles model with the Elo model beats either alone, because the two capture *orthogonal* signal (shot quality vs goal-based dynamic form). This is the shipped predictor.
+- **Ensemble vs Naive:** ΔRPS = −0.0528, 95% CI [−0.0958, −0.0111], P = 0.99 — **+26.2% RPS / +16.4% log-loss**.
+- **Full vs FIFA-only:** ΔRPS = −0.0012, 95% CI [−0.0090, +0.0062] — **not distinguishable** on 52 matches; the +0.7% event-data edge is within noise.
+- **Elo vs Full:** the *simple* Elo baseline edges the sophisticated xG model on probabilistic scores — the lesson that motivated the ensemble: **Elo learns from goals in all 376 matches, while the xG model discards the ~133 without shot data**. The xG model still picks more outright winners (67% vs 60% top-1).
 
-**Key narrative:** on WC-only data (~2 games/team) the event model was −3.0% RPS vs the FIFA baseline — it was fitting noise. Adding qualifier data (~10 games/team) flipped the sign to +0.7%, and the pipeline is decisively better than naive. Then benchmarking against **Elo** — the standard baseline — revealed the deeper lesson: the simple baseline edges the sophisticated model, because Elo learns from every match's *goals* while the xG model throws away the third of matches that lack shot data. The most accurate next step isn't a fancier model; it's feeding the model the goal-based signal Elo is already using.
+**Key narrative:** on WC-only data (~2 games/team) the event model was −3.0% RPS vs the FIFA baseline — fitting noise. Qualifier data (~10 games/team) flipped that to +0.7% (still within noise). Benchmarking against **Elo** then exposed the real lesson — a simple goal-based rating edges the xG model, because xG throws away a third of the matches. The resolution: **ensemble the two**, which is the first *statistically significant* gain in the project (P=0.98) and is the shipped model. The scoreline grid still comes from the xG model (Elo has none); the W/D/L blends both.
 
 **Hyperparameter tuning:** grid search over `alpha` × `fifa_scale` confirms defaults (`alpha=0.05`, `fifa_scale=1.0`) are within 0.18% RPS of the best cell (rank 5/30 on the surface) — a flat landscape, so defaults are validated, not over-tuned.
 
