@@ -134,6 +134,7 @@ W/D/L probabilities are obtained by summing the upper triangle, diagonal, and lo
 
 | Model | log-loss | RPS | top-1 |
 |---|---|---|---|
+| Elo benchmark | 0.8505 | 0.1459 | 60% |
 | Full (xG + FIFA + form) | 0.8727 | 0.1606 | 67% |
 | FIFA-only | 0.8727 | 0.1618 | 67% |
 | Naive base-rate | — | 0.2019 | — |
@@ -146,6 +147,11 @@ This is a clean demonstration of a thin-data failure: the failure was **predicte
 
 - **Full vs Naive:** ΔRPS = −0.0413, 95% CI [−0.0777, −0.0061], P(Full better) = 0.99. The event-data pipeline is **statistically significantly** better than naive base-rates (+20.5% RPS, +13.0% log-loss).
 - **Full vs FIFA-only:** ΔRPS = −0.0012, 95% CI [−0.0090, +0.0062]. The interval straddles zero — the +0.7% edge is **not statistically distinguishable** from noise on 52 evaluation matches. A larger or rolling backtest would be needed to declare the event model definitively better than the FIFA prior alone.
+- **Elo vs Full:** ΔRPS = −0.0147, 95% CI [−0.0356, +0.0077], P(Elo better) = 0.91. A simple Elo rating (World-Football style: chronological updates, goal-difference multiplier, home advantage, FIFA-seeded priors, with a fitted draw model) **edges the sophisticated xG model** on probabilistic scores — not significantly, but the point estimate consistently favours it. The Full model still picks more outright winners (67% vs 60% top-1).
+
+**The deeper lesson.** Elo wins for a concrete, instructive reason: it learns from the *goals* in all 376 matches, whereas the xG model can only learn from the 243 matches that carry shot coordinates — it discards the other ~133 (CAF/OFC qualifiers with no shot data). The "sophistication" of insisting on xG quietly starved the model of a third of its signal. This is the most useful finding in the project: **the cheapest path to a more accurate model is not a fancier estimator, but feeding it the goal-based history Elo already uses** — e.g. using the dynamic Elo rating as the model's prior in place of static FIFA rank, or enabling the validated `goals_fallback` + `sos_weighting` path. Elo also makes a strong, recognised external benchmark, sitting at or above the event-data model and well above naive.
+
+*Methodological note:* Elo predictions are leakage-free pre-match (ratings accumulated chronologically from earlier matches only); the draw model's two parameters are fit on the full corpus, a mild optimism relative to the strictly held-out LOO protocol used for the other rows.
 
 The honest summary: the pipeline is clearly better than guessing base-rates; whether per-team xG features beat the FIFA prior alone is an open question at this sample size.
 

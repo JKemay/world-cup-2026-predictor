@@ -24,7 +24,13 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   and **+20.5% vs naive**. 67% top-1, 0.161 RPS.
 - Streamlit dashboard (`app/streamlit_app.py`), deploy-ready from a committed
   snapshot (`app/match_table.csv`).
-- 74-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
+- **Elo benchmark** (`footy/ratings/elo.py`, `build_elo.py`) — World-Football-style
+  Elo, leakage-free on the WC eval set. **Key finding:** Elo (RPS 0.1459, log-loss
+  0.8505) *edges* the Full xG model (0.1606 / 0.8727), because Elo learns from goals
+  in all 376 matches while the xG model discards the ~133 with no shot data. Not
+  significant (ΔRPS 95% CI [−0.0356, +0.0077], P(Elo better)=0.91); Full still wins
+  top-1 (67% vs 60%).
+- 101-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
   ruff-clean (line-length 120).
 
 ## Open items / next steps
@@ -34,6 +40,15 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   currently lean on the FIFA prior. Extend `pull_qualifiers.py` discovery.
 - **Streamlit Community Cloud deploy** — point it at `app/streamlit_app.py`
   (needs a GitHub OAuth login; the public app URL is the resume link).
+- **Market-odds benchmark (in progress)** — OddsPapi has a free tier with historical
+  pre-match 1X2 odds covering internationals (needs a free self-serve `ODDSPAPI_API_KEY`
+  in `.env`). Plan: match our fixtures to OddsPapi by team+date, convert to no-vig
+  probabilities, compare model vs market vs Elo vs FIFA vs naive + a betting-ROI sim.
+- **Use Elo as the prior / ensemble** — Elo beating the xG model suggests the dynamic,
+  goal-informed Elo rating is a *better prior than static FIFA rank*. Swapping/augmenting
+  the `fifa` prior in `DixonColesRatings` with Elo (or ensembling the two) is the most
+  promising accuracy lever, and complements the `goals_fallback`/`sos_weighting` flags
+  (both validated, default off) that move in the same direction.
 - The +0.7% edge over FIFA-only is within sampling noise on 52 eval matches —
   more/better data is the path to a decisive result.
 - Biggest model misses are **under-predicted draws** (favorites dropping points,
