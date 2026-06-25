@@ -110,7 +110,8 @@ def main() -> None:
         st.markdown("---")
         st.markdown(
             "Built from Sportradar event data. "
-            "[Pipeline & code](https://github.com/) · resume project."
+            "[Pipeline & code](https://github.com/JKemay/world-cup-2026-predictor) "
+            "· resume project."
         )
 
     di, df_ = (teams.index("France") if "France" in teams else 0,
