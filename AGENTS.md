@@ -52,6 +52,14 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   to 0.719 and produced a 0.957 xG for an 11 m header. Geometry-only xG (distance +
   angle) is the correct and shipped model. Do not reintroduce shot-type flags without
   verifying that a non-trial Sportradar tier populates `method` on non-goal events.
+- **Goals fallback for no-xG matches (`goals_fallback`, default off):** using actual
+  goals for matches whose feed lacks shot data lifts thin CAF/Curaçao teams from 2 to
+  12 matches of signal. It improved aggregate RPS only within noise (0.1606 → 0.1586,
+  95% CI straddles 0) and *lowered* top-1 accuracy, while overrating minnows that ran
+  up goals vs weak opposition — e.g. it pushed Netherlands–Tunisia from 65/24/11 to
+  53/30/17 (more generous to the underdog, the wrong direction). The flag exists but
+  ships **off**. The principled fix for thin CAF teams is **strength-of-schedule
+  weighting** (down-weight goals vs weak opponents), not raw goals.
 
 ## Setup
 

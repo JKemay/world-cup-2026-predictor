@@ -50,12 +50,16 @@ def grid_summary(grid: np.ndarray) -> dict:
 class DixonColesRatings:
     def __init__(self, alpha: float = 0.5, response: str = "xg",
                  fifa: dict[str, float] | None = None, fifa_scale: float = 1.0,
-                 team_effects: bool = True):
+                 team_effects: bool = True, goals_fallback: bool = False):
         self.alpha = alpha          # L2 strength on per-team adjustments
         self.response = response    # 'xg' (default) or 'goals'
         self.fifa = fifa            # {team: standardized strength} prior, or None
         self.fifa_scale = fifa_scale
         self.team_effects = team_effects  # False = FIFA-only baseline (no per-team data)
+        # if True, use actual goals for matches with no shot data instead of skipping them.
+        # Default off: it improves aggregate RPS only within noise, lowers top-1 accuracy, and
+        # overrates minnows that ran up goals vs weak opposition (no strength-of-schedule weighting).
+        self.goals_fallback = goals_fallback
         self.teams_: list[str] = []
         self.attack_: dict[str, float] = {}
         self.defense_: dict[str, float] = {}
@@ -73,7 +77,12 @@ class DixonColesRatings:
             # skip when both xG columns are exactly 0 — provider returned no shot data,
             # not a genuine 0-xG game (real matches always produce some xG from corners/set-pieces)
             if self.response == "xg" and yh == 0.0 and ya == 0.0:
-                continue
+                if not self.goals_fallback:
+                    continue
+                # Fall back to actual goals for matches where the provider returned no shot data.
+                # Scale is consistent: total xG ≈ total goals by calibration, so goals are an
+                # unbiased (if noisier) stand-in when xG is unavailable.
+                yh, ya = float(m.home_goals), float(m.away_goals)
             rows.append((m.home, m.away, 1, yh))
             rows.append((m.away, m.home, 0, ya))
         return pd.DataFrame(rows, columns=["attack", "defense", "is_home", "y"])
