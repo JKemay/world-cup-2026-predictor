@@ -114,83 +114,173 @@ def main() -> None:
             "· resume project."
         )
 
-    di, df_ = (teams.index("France") if "France" in teams else 0,
-               teams.index("Iraq") if "Iraq" in teams else 1)
-    c1, c2, c3 = st.columns([5, 1, 5])
-    with c1:
-        home = st.selectbox("🏠 Home team", teams, index=di)
-    with c2:
-        st.markdown("<div style='text-align:center;padding-top:1.9em;font-size:1.4em'>vs</div>",
-                    unsafe_allow_html=True)
-    with c3:
-        away = st.selectbox("✈️ Away team", teams, index=df_)
+    tab_predict, tab_ratings, tab_model = st.tabs(["🔮 Predict", "📊 Team ratings", "📈 Model & validation"])
 
-    if home == away:
-        st.warning("Pick two different teams.")
-        st.stop()
+    # ------------------------------------------------------------------ #
+    # TAB 1 — Predict                                                      #
+    # ------------------------------------------------------------------ #
+    with tab_predict:
+        di, df_ = (teams.index("France") if "France" in teams else 0,
+                   teams.index("Iraq") if "Iraq" in teams else 1)
+        c1, c2, c3 = st.columns([5, 1, 5])
+        with c1:
+            home = st.selectbox("🏠 Home team", teams, index=di)
+        with c2:
+            st.markdown("<div style='text-align:center;padding-top:1.9em;font-size:1.4em'>vs</div>",
+                        unsafe_allow_html=True)
+        with c3:
+            away = st.selectbox("✈️ Away team", teams, index=df_)
 
-    grid, lam, mu = model.scoreline_grid(home, away, max_goals=6)
-    s = grid_summary(grid)
-    p_home, p_draw, p_away = s["home_win"], s["draw"], s["away_win"]
-    top_h, top_a = s["top_score"]
+        if home == away:
+            st.warning("Pick two different teams.")
+            st.stop()
 
-    st.markdown("### Outcome")
-    m1, m2, m3 = st.columns(3)
-    m1.metric(f"🏠 {home} win", f"{p_home*100:.0f}%")
-    m2.metric("Draw", f"{p_draw*100:.0f}%")
-    m3.metric(f"✈️ {away} win", f"{p_away*100:.0f}%")
+        grid, lam, mu = model.scoreline_grid(home, away, max_goals=6)
+        s = grid_summary(grid)
+        p_home, p_draw, p_away = s["home_win"], s["draw"], s["away_win"]
+        top_h, top_a = s["top_score"]
 
-    # probability bar
-    bar = go.Figure()
-    for label, val, color in [
-        (f"{home}", p_home, "#1b9e77"), ("Draw", p_draw, "#999999"),
-        (f"{away}", p_away, "#e4572e"),
-    ]:
-        bar.add_trace(go.Bar(
-            x=[val * 100], y=["W/D/L"], orientation="h", name=label,
-            marker_color=color, text=f"{label} {val*100:.0f}%",
-            textposition="inside", insidetextanchor="middle",
-        ))
-    bar.update_layout(
-        barmode="stack", height=90, showlegend=False,
-        margin=dict(l=10, r=10, t=4, b=4),
-        xaxis=dict(range=[0, 100], showticklabels=False),
-        yaxis=dict(showticklabels=False),
-    )
-    st.plotly_chart(bar, use_container_width=True)
+        st.markdown("### Outcome")
+        m1, m2, m3 = st.columns(3)
+        m1.metric(f"🏠 {home} win", f"{p_home*100:.0f}%")
+        m2.metric("Draw", f"{p_draw*100:.0f}%")
+        m3.metric(f"✈️ {away} win", f"{p_away*100:.0f}%")
 
-    left, right = st.columns([3, 2])
-    with left:
-        st.markdown("### Scoreline probabilities")
-        st.plotly_chart(scoreline_figure(grid, home, away), use_container_width=True)
-    with right:
-        st.markdown("### Prediction card")
-        st.markdown(
-            f"**Expected goals**\n\n"
-            f"- {home}: **{lam:.2f}**\n"
-            f"- {away}: **{mu:.2f}**\n\n"
-            f"**Most likely score**\n\n"
-            f"## {home} {top_h}–{top_a} {away}\n"
-            f"<span style='color:#888'>({s['top_prob']*100:.1f}% of all scorelines)</span>",
-            unsafe_allow_html=True,
+        # probability bar
+        bar = go.Figure()
+        for label, val, color in [
+            (f"{home}", p_home, "#1b9e77"), ("Draw", p_draw, "#999999"),
+            (f"{away}", p_away, "#e4572e"),
+        ]:
+            bar.add_trace(go.Bar(
+                x=[val * 100], y=["W/D/L"], orientation="h", name=label,
+                marker_color=color, text=f"{label} {val*100:.0f}%",
+                textposition="inside", insidetextanchor="middle",
+            ))
+        bar.update_layout(
+            barmode="stack", height=90, showlegend=False,
+            margin=dict(l=10, r=10, t=4, b=4),
+            xaxis=dict(range=[0, 100], showticklabels=False),
+            yaxis=dict(showticklabels=False),
         )
-        # top 5 most likely exact scores
-        flat = [((i, j), grid[i, j]) for i in range(grid.shape[0]) for j in range(grid.shape[1])]
-        flat.sort(key=lambda kv: kv[1], reverse=True)
-        rows = [{"Score": f"{i}–{j}", "Prob": f"{p*100:.1f}%"} for (i, j), p in flat[:5]]
-        st.table(pd.DataFrame(rows))
+        st.plotly_chart(bar, use_container_width=True)
 
-    with st.expander("Team ratings (att / def, expected xG vs an average opponent)"):
+        left, right = st.columns([3, 2])
+        with left:
+            st.markdown("### Scoreline probabilities")
+            st.plotly_chart(scoreline_figure(grid, home, away), use_container_width=True)
+        with right:
+            st.markdown("### Prediction card")
+            st.markdown(
+                f"**Expected goals**\n\n"
+                f"- {home}: **{lam:.2f}**\n"
+                f"- {away}: **{mu:.2f}**\n\n"
+                f"**Most likely score**\n\n"
+                f"## {home} {top_h}–{top_a} {away}\n"
+                f"<span style='color:#888'>({s['top_prob']*100:.1f}% of all scorelines)</span>",
+                unsafe_allow_html=True,
+            )
+            # top 5 most likely exact scores
+            flat = [((i, j), grid[i, j]) for i in range(grid.shape[0]) for j in range(grid.shape[1])]
+            flat.sort(key=lambda kv: kv[1], reverse=True)
+            rows = [{"Score": f"{i}–{j}", "Prob": f"{p*100:.1f}%"} for (i, j), p in flat[:5]]
+            st.table(pd.DataFrame(rows))
+
+    # ------------------------------------------------------------------ #
+    # TAB 2 — Team ratings                                                 #
+    # ------------------------------------------------------------------ #
+    with tab_ratings:
+        st.markdown("### Team ratings — WC 2026 qualified nations")
         rf = model.ratings_frame()
-        rf = rf[rf["team"].isin(teams)].reset_index(drop=True)
-        rf.index = rf.index + 1
-        st.dataframe(
-            rf.rename(columns={"att_xg": "Attack (xG for)",
-                               "def_xg_allowed": "Defense (xG allowed)", "net": "Net"})
-            .style.format({"Attack (xG for)": "{:.2f}",
-                           "Defense (xG allowed)": "{:.2f}", "Net": "{:+.2f}"}),
-            use_container_width=True, height=420,
+        rf_wc = (
+            rf[rf["team"].isin(teams)]
+            .sort_values("net", ascending=False)
+            .reset_index(drop=True)
         )
+        rf_wc.index = rf_wc.index + 1
+        st.dataframe(
+            rf_wc.rename(columns={
+                "att_xg": "Attack xG",
+                "def_xg_allowed": "Defense xG allowed",
+                "net": "Net",
+            }).style.format({
+                "Attack xG": "{:.2f}",
+                "Defense xG allowed": "{:.2f}",
+                "Net": "{:+.2f}",
+            }),
+            use_container_width=True,
+            height=460,
+        )
+
+        st.markdown("### Attack vs defense (xG per match vs an average opponent)")
+        med_att = rf_wc["att_xg"].median()
+        med_def = rf_wc["def_xg_allowed"].median()
+        top10 = set(rf_wc.head(10)["team"])
+
+        scatter = go.Figure()
+        scatter.add_trace(go.Scatter(
+            x=rf_wc["att_xg"],
+            y=rf_wc["def_xg_allowed"],
+            mode="markers+text",
+            text=[t if t in top10 else "" for t in rf_wc["team"]],
+            textposition="top center",
+            marker=dict(size=9, color="#1b9e77", opacity=0.75),
+            hovertext=rf_wc["team"],
+            hovertemplate="%{hovertext}<br>Att: %{x:.2f}  Def allowed: %{y:.2f}<extra></extra>",
+        ))
+        # dashed median guide lines
+        scatter.add_hline(y=med_def, line_dash="dash", line_color="#aaaaaa", line_width=1)
+        scatter.add_vline(x=med_att, line_dash="dash", line_color="#aaaaaa", line_width=1)
+        scatter.update_layout(
+            xaxis_title="Attack xG (higher = stronger attack)",
+            yaxis_title="Defense xG allowed (lower = stronger defense)",
+            yaxis=dict(autorange="reversed"),
+            height=520,
+            margin=dict(l=10, r=10, t=30, b=10),
+        )
+        st.plotly_chart(scatter, use_container_width=True)
+        st.caption(
+            "Y-axis reversed: teams toward the top concede fewer xG (better defense). "
+            "Up and to the right = strong on both ends. Dashed lines show the median."
+        )
+
+    # ------------------------------------------------------------------ #
+    # TAB 3 — Model & validation                                           #
+    # ------------------------------------------------------------------ #
+    with tab_model:
+        st.markdown("### How good is the model?")
+        st.markdown(
+            """
+**Leave-one-out backtest** on historical WC + qualifier matches:
+
+| Metric | Value |
+|---|---|
+| Full model RPS | **0.1606** |
+| Top-1 accuracy | **67%** |
+
+**Bootstrap confidence intervals** (10 000 resamples):
+
+- Full vs Naive baseline: 95% CI **[−0.0777, −0.0061]**, P = 0.99 — *significant improvement*
+- Full vs FIFA-only: 95% CI **[−0.0090, +0.0062]** — *within noise* (xG adds signal, not always
+  enough to beat a FIFA-prior alone on small samples)
+
+**Hyperparameter tuning** confirmed the defaults (α = 0.05, FIFA scale = 1.0) sit at or near the
+RPS minimum — no further gains available from regularization alone.
+"""
+        )
+
+        figures = [
+            (ROOT / "calibration.png", "Reliability — predicted vs observed"),
+            (ROOT / "model_analysis.png", "Calibration, biggest surprises, attack/defense landscape"),
+            (ROOT / "tune_alpha_fifa.png", "RPS surface over regularization × FIFA-prior weight"),
+            (ROOT / "xg_pitch.png", "Expected goals by shot location"),
+        ]
+        for fig_path, caption in figures:
+            if fig_path.exists():
+                st.image(str(fig_path), caption=caption, use_container_width=True)
+
+        st.markdown("---")
+        st.markdown("Full write-up: `docs/METHODOLOGY.md`")
 
 
 if __name__ == "__main__":
