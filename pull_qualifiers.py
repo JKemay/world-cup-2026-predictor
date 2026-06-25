@@ -19,7 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from footy.ingest.sportradar import SportradarError, SportradarSource  # noqa: E402
-from footy.ratings.fifa import FIFA_RANK, normalize_team               # noqa: E402
+from footy.ratings.fifa import FIFA_RANK, normalize_team  # noqa: E402
 
 WC_TEAMS: set[str] = set(FIFA_RANK.keys())
 DRY_RUN = "--dry-run" in sys.argv
@@ -110,13 +110,12 @@ def main() -> None:
         shots = [x for x in events if "shot" in (x.get("type") or "")]
         total_events += len(events)
         total_shots += len(shots)
-        status = "cached" if src.cache_hits and src.calls_made == 0 else "fetched"
         print(f"[{i:>3}/{len(all_entries)}] {names_str:<44} {len(events):>4} events  {len(shots):>3} shots")
 
     print(f"\nDone — {len(all_entries) - failures}/{len(all_entries)} timelines cached")
     print(f"  API calls: {src.calls_made}   cache hits: {src.cache_hits}")
     print(f"  New events: {total_events:,}   new shots: {total_shots:,}")
-    print(f"\nNext steps:")
+    print("\nNext steps:")
     print("  python3 build_xg.py       # retrain xG on all shots (WC + qualifiers)")
     print("  python3 build_eval.py     # re-run backtest — should now see Full > FIFA-only")
 

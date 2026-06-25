@@ -14,17 +14,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import matplotlib  # noqa: E402
-import pandas as pd  # noqa: E402
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from footy.config import DATA_DIR, PROJECT_ROOT, WC_SEASON_ID  # noqa: E402
+from footy.evaluate.backtest import (  # noqa: E402
+    leave_one_out,
+    naive_baseline,
+    reliability,
+    score,
+)
 from footy.features.matches import build_match_table  # noqa: E402
 from footy.ratings.fifa import fifa_strength  # noqa: E402
-from footy.evaluate.backtest import (  # noqa: E402
-    leave_one_out, naive_baseline, reliability, score,
-)
 
 ALPHA, FIFA_SCALE = 0.05, 1.0
 

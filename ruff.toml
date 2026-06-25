@@ -1,0 +1,11 @@
+line-length = 120
+target-version = "py313"
+
+[lint]
+select = ["E", "F", "W", "I"]
+# E731: assigning a short lambda (e.g. a sort key) is fine and readable here.
+ignore = ["E731"]
+
+[lint.per-file-ignores]
+# entry-point scripts must mutate sys.path before importing the local package
+"analyze_results.py" = ["E402"]

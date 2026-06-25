@@ -88,7 +88,8 @@ def main():
     print("\n=== France vs Iraq ===")
     print(f"  expected goals : France {lam:.2f}   Iraq {mu:.2f}")
     print(f"  likely score   : France {s['top_score'][0]}-{s['top_score'][1]} ({s['top_prob']*100:.1f}%)")
-    print(f"  outcome        : France {s['home_win']*100:.1f}%  draw {s['draw']*100:.1f}%  Iraq {s['away_win']*100:.1f}%")
+    print(f"  outcome        : France {s['home_win']*100:.1f}%  draw {s['draw']*100:.1f}%"
+          f"  Iraq {s['away_win']*100:.1f}%")
     print("  reference model: France 3-0, 90.6% / 7.2% / 2.2%")
 
     plot_grid(grid, "France", "Iraq", lam, mu, PROJECT_ROOT / "france_iraq_grid.png")
