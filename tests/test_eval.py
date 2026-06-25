@@ -4,7 +4,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from footy.evaluate.backtest import actual_outcome, naive_baseline, rps, score
+from footy.evaluate.backtest import (
+    actual_outcome,
+    bootstrap_ci,
+    naive_baseline,
+    paired_bootstrap,
+    per_match_rps,
+    rps,
+    score,
+)
 
 # ---------------------------------------------------------------------------
 # actual_outcome
@@ -179,3 +187,122 @@ class TestNaiveBaseline:
     def test_actuals_are_valid_outcomes(self, tiny_matches):
         _, actuals = naive_baseline(tiny_matches)
         assert set(actuals).issubset({0, 1, 2})
+
+
+# ---------------------------------------------------------------------------
+# per_match_rps
+# ---------------------------------------------------------------------------
+
+class TestPerMatchRPS:
+    @pytest.fixture
+    def sample_preds_actuals(self):
+        rng = np.random.default_rng(42)
+        n = 20
+        raw = rng.dirichlet(np.ones(3), size=n)
+        preds = raw / raw.sum(axis=1, keepdims=True)
+        actuals = rng.integers(0, 3, size=n)
+        return preds, actuals
+
+    def test_length_equals_n(self, sample_preds_actuals):
+        preds, actuals = sample_preds_actuals
+        result = per_match_rps(preds, actuals)
+        assert len(result) == len(actuals)
+
+    def test_each_value_in_unit_interval(self, sample_preds_actuals):
+        preds, actuals = sample_preds_actuals
+        result = per_match_rps(preds, actuals)
+        assert np.all(result >= 0.0)
+        assert np.all(result <= 1.0)
+
+    def test_mean_equals_score_rps(self, sample_preds_actuals):
+        preds, actuals = sample_preds_actuals
+        result = per_match_rps(preds, actuals)
+        s = score(preds, actuals)
+        assert float(result.mean()) == pytest.approx(s["rps"], rel=1e-9)
+
+
+# ---------------------------------------------------------------------------
+# bootstrap_ci
+# ---------------------------------------------------------------------------
+
+class TestBootstrapCI:
+    @pytest.fixture
+    def known_values(self):
+        rng = np.random.default_rng(7)
+        return rng.uniform(0.1, 0.4, size=50)
+
+    def test_mean_is_correct(self, known_values):
+        ci = bootstrap_ci(known_values, n_boot=5_000, seed=0)
+        assert ci["mean"] == pytest.approx(float(known_values.mean()), rel=1e-9)
+
+    def test_lo_le_mean_le_hi(self, known_values):
+        ci = bootstrap_ci(known_values, n_boot=5_000, seed=0)
+        assert ci["lo"] <= ci["mean"] <= ci["hi"]
+
+    def test_wider_ci_at_higher_confidence(self, known_values):
+        ci95 = bootstrap_ci(known_values, n_boot=5_000, ci=0.95, seed=0)
+        ci99 = bootstrap_ci(known_values, n_boot=5_000, ci=0.99, seed=0)
+        # 99% CI must be at least as wide as the 95% CI
+        assert ci99["lo"] <= ci95["lo"]
+        assert ci99["hi"] >= ci95["hi"]
+
+    def test_deterministic_with_same_seed(self, known_values):
+        ci_a = bootstrap_ci(known_values, n_boot=1_000, seed=99)
+        ci_b = bootstrap_ci(known_values, n_boot=1_000, seed=99)
+        assert ci_a == ci_b
+
+    def test_different_seeds_may_differ(self, known_values):
+        ci_a = bootstrap_ci(known_values, n_boot=1_000, seed=0)
+        ci_b = bootstrap_ci(known_values, n_boot=1_000, seed=1)
+        # mean is always identical; only lo/hi may shift
+        assert ci_a["mean"] == ci_b["mean"]
+
+
+# ---------------------------------------------------------------------------
+# paired_bootstrap
+# ---------------------------------------------------------------------------
+
+class TestPairedBootstrap:
+    def test_identical_inputs_mean_diff_zero(self):
+        rng = np.random.default_rng(5)
+        arr = rng.uniform(0.1, 0.5, size=30)
+        result = paired_bootstrap(arr, arr, n_boot=2_000, seed=0)
+        assert result["mean_diff"] == pytest.approx(0.0, abs=1e-12)
+
+    def test_identical_inputs_p_a_better_in_unit_interval(self):
+        rng = np.random.default_rng(5)
+        arr = rng.uniform(0.1, 0.5, size=30)
+        result = paired_bootstrap(arr, arr, n_boot=2_000, seed=0)
+        assert 0.0 <= result["p_a_better"] <= 1.0
+
+    def test_identical_inputs_deterministic(self):
+        rng = np.random.default_rng(5)
+        arr = rng.uniform(0.1, 0.5, size=30)
+        r1 = paired_bootstrap(arr, arr, n_boot=500, seed=42)
+        r2 = paired_bootstrap(arr, arr, n_boot=500, seed=42)
+        assert r1 == r2
+
+    def test_a_uniformly_smaller_p_a_better_one(self):
+        """When rps_a is strictly lower for every match, P(a better) == 1.0."""
+        rng = np.random.default_rng(3)
+        rps_b = rng.uniform(0.3, 0.5, size=40)
+        rps_a = rps_b - 0.1  # a is always 0.1 better
+        result = paired_bootstrap(rps_a, rps_b, n_boot=2_000, seed=0)
+        assert result["mean_diff"] == pytest.approx(-0.1, rel=1e-9)
+        assert result["p_a_better"] == pytest.approx(1.0)
+
+    def test_a_uniformly_larger_p_a_better_zero(self):
+        """When rps_a is strictly higher for every match, P(a better) == 0.0."""
+        rng = np.random.default_rng(3)
+        rps_b = rng.uniform(0.1, 0.3, size=40)
+        rps_a = rps_b + 0.1
+        result = paired_bootstrap(rps_a, rps_b, n_boot=2_000, seed=0)
+        assert result["p_a_better"] == pytest.approx(0.0)
+
+    def test_ci_straddles_zero_when_no_real_difference(self):
+        """When the two series are independent noise, the CI should include 0."""
+        rng = np.random.default_rng(17)
+        a = rng.uniform(0.2, 0.4, size=100)
+        b = rng.uniform(0.2, 0.4, size=100)
+        result = paired_bootstrap(a, b, n_boot=5_000, seed=0)
+        assert result["lo"] < 0 < result["hi"]

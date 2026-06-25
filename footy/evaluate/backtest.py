@@ -65,6 +65,62 @@ def naive_baseline(matches: pd.DataFrame):
     return np.tile(rates, (len(o), 1)), o
 
 
+def per_match_rps(preds: np.ndarray, actuals: np.ndarray) -> np.ndarray:
+    """Return the per-match RPS vector (length n).  Lower is better."""
+    return np.array([rps(preds[i], actuals[i]) for i in range(len(actuals))])
+
+
+def bootstrap_ci(values: np.ndarray, n_boot: int = 10_000, ci: float = 0.95, seed: int = 0) -> dict:
+    """Bootstrap the MEAN of a 1-D array and return a percentile CI.
+
+    Returns {"mean": float, "lo": float, "hi": float}.
+    """
+    rng = np.random.default_rng(seed)
+    n = len(values)
+    boot_means = np.empty(n_boot)
+    for b in range(n_boot):
+        idx = rng.integers(0, n, size=n)
+        boot_means[b] = values[idx].mean()
+    alpha = (1.0 - ci) / 2.0
+    return {
+        "mean": float(values.mean()),
+        "lo": float(np.percentile(boot_means, 100 * alpha)),
+        "hi": float(np.percentile(boot_means, 100 * (1 - alpha))),
+    }
+
+
+def paired_bootstrap(rps_a: np.ndarray, rps_b: np.ndarray,
+                     n_boot: int = 10_000, ci: float = 0.95, seed: int = 0) -> dict:
+    """Paired bootstrap on the per-match difference d = rps_a - rps_b.
+
+    The same match indices are resampled for both series (paired).
+
+    Returns
+    -------
+    {"mean_diff": float, "lo": float, "hi": float, "p_a_better": float}
+    where ``p_a_better`` is the fraction of bootstrap resamples in which
+    mean(rps_a_boot) < mean(rps_b_boot).  Lower RPS is better.
+    """
+    rng = np.random.default_rng(seed)
+    n = len(rps_a)
+    diff = rps_a - rps_b
+    boot_diffs = np.empty(n_boot)
+    a_better = 0
+    for b in range(n_boot):
+        idx = rng.integers(0, n, size=n)
+        d = diff[idx].mean()
+        boot_diffs[b] = d
+        if d < 0:
+            a_better += 1
+    alpha = (1.0 - ci) / 2.0
+    return {
+        "mean_diff": float(diff.mean()),
+        "lo": float(np.percentile(boot_diffs, 100 * alpha)),
+        "hi": float(np.percentile(boot_diffs, 100 * (1 - alpha))),
+        "p_a_better": float(a_better / n_boot),
+    }
+
+
 def score(preds: np.ndarray, actuals: np.ndarray) -> dict:
     n = len(actuals)
     picked = preds[np.arange(n), actuals]

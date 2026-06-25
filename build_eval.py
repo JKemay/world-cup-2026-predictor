@@ -20,8 +20,11 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from footy.config import DATA_DIR, PROJECT_ROOT, WC_SEASON_ID  # noqa: E402
 from footy.evaluate.backtest import (  # noqa: E402
+    bootstrap_ci,
     leave_one_out,
     naive_baseline,
+    paired_bootstrap,
+    per_match_rps,
     reliability,
     score,
 )
@@ -82,6 +85,44 @@ def main():
     nb = table["Naive base-rate"]
     print(f"Full vs naive     : RPS {(1 - full['rps']/nb['rps'])*100:+.1f}%   "
           f"log-loss {(1 - full['log_loss']/nb['log_loss'])*100:+.1f}%")
+
+    # ------------------------------------------------------------------
+    # Statistical significance (paired bootstrap, N=10 000 resamples)
+    # ------------------------------------------------------------------
+    N_BOOT, SEED = 10_000, 0
+    rps_full = per_match_rps(pf, af)
+    rps_fifa = per_match_rps(pq, aq)
+    rps_naive = per_match_rps(pn, an)
+
+    ci_full = bootstrap_ci(rps_full, n_boot=N_BOOT, seed=SEED)
+    ci_fifa = bootstrap_ci(rps_fifa, n_boot=N_BOOT, seed=SEED)
+    ci_naive = bootstrap_ci(rps_naive, n_boot=N_BOOT, seed=SEED)
+
+    diff_fo = paired_bootstrap(rps_full, rps_fifa, n_boot=N_BOOT, seed=SEED)
+    diff_nb = paired_bootstrap(rps_full, rps_naive, n_boot=N_BOOT, seed=SEED)
+
+    print(f"\nStatistical significance (paired bootstrap, N={N_BOOT:,} resamples, 95 % CI)")
+    print("-" * 70)
+    print(f"  Full model   : mean RPS {ci_full['mean']:.4f}  95% CI [{ci_full['lo']:.4f}, {ci_full['hi']:.4f}]")
+    print(f"  FIFA-only    : mean RPS {ci_fifa['mean']:.4f}  95% CI [{ci_fifa['lo']:.4f}, {ci_fifa['hi']:.4f}]")
+    print(f"  Naive        : mean RPS {ci_naive['mean']:.4f}  95% CI [{ci_naive['lo']:.4f}, {ci_naive['hi']:.4f}]")
+    print()
+    fo_straddles = diff_fo["lo"] < 0 < diff_fo["hi"]
+    fo_interp = "not statistically distinguishable on this sample" if fo_straddles else (
+        "Full significantly better" if diff_fo["mean_diff"] < 0 else "FIFA-only significantly better"
+    )
+    print(f"  Full vs FIFA-only : mean ΔRPS {diff_fo['mean_diff']:+.4f}  "
+          f"95% CI [{diff_fo['lo']:+.4f}, {diff_fo['hi']:+.4f}]  "
+          f"P(Full better)={diff_fo['p_a_better']:.3f}")
+    print(f"    -> {fo_interp}")
+    nb_straddles = diff_nb["lo"] < 0 < diff_nb["hi"]
+    nb_interp = "not statistically distinguishable on this sample" if nb_straddles else (
+        "Full significantly better" if diff_nb["mean_diff"] < 0 else "Naive significantly better"
+    )
+    print(f"  Full vs Naive     : mean ΔRPS {diff_nb['mean_diff']:+.4f}  "
+          f"95% CI [{diff_nb['lo']:+.4f}, {diff_nb['hi']:+.4f}]  "
+          f"P(Full better)={diff_nb['p_a_better']:.3f}")
+    print(f"    -> {nb_interp}")
 
     rel = reliability(pf, af, n_bins=5)
     print("\nCalibration (predicted -> observed):")
