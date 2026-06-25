@@ -9,3 +9,4 @@ ignore = ["E731"]
 [lint.per-file-ignores]
 # entry-point scripts must mutate sys.path before importing the local package
 "analyze_results.py" = ["E402"]
+"build_elo.py" = ["E402"]
