@@ -21,6 +21,21 @@ from scipy.optimize import minimize_scalar
 from scipy.stats import poisson
 from sklearn.linear_model import PoissonRegressor
 
+# ---------------------------------------------------------------------------
+# Strength-of-schedule (SoS) weighting for goals-fallback rows
+# ---------------------------------------------------------------------------
+# These are fixed a priori — do NOT tune on the eval set.
+# A fallback row (goals used instead of xG) is down-weighted when the
+# opponent (defender) had low FIFA strength, so minnow goals vs weak teams
+# count less in the Poisson regression.
+#
+#   w = clip(SOS_W0 + SOS_K * fifa_defense_z, SOS_WLO, SOS_WHI)
+#
+# where fifa_defense_z is the z-scored FIFA rating of the *opponent*.
+SOS_W0 = 0.5        # base weight at average opponent strength (z=0)
+SOS_K = 0.30        # shift per unit of opponent FIFA z-score
+SOS_WLO, SOS_WHI = 0.1, 1.0   # clip range
+
 
 def tau(h: int, a: int, lam: float, mu: float, rho: float) -> float:
     """Dixon-Coles low-score dependency correction."""
@@ -50,7 +65,8 @@ def grid_summary(grid: np.ndarray) -> dict:
 class DixonColesRatings:
     def __init__(self, alpha: float = 0.5, response: str = "xg",
                  fifa: dict[str, float] | None = None, fifa_scale: float = 1.0,
-                 team_effects: bool = True, goals_fallback: bool = False):
+                 team_effects: bool = True, goals_fallback: bool = False,
+                 sos_weighting: bool = False):
         self.alpha = alpha          # L2 strength on per-team adjustments
         self.response = response    # 'xg' (default) or 'goals'
         self.fifa = fifa            # {team: standardized strength} prior, or None
@@ -60,6 +76,10 @@ class DixonColesRatings:
         # Default off: it improves aggregate RPS only within noise, lowers top-1 accuracy, and
         # overrates minnows that ran up goals vs weak opposition (no strength-of-schedule weighting).
         self.goals_fallback = goals_fallback
+        # if True (and goals_fallback=True and fifa is not None), down-weight goals-fallback rows
+        # by the FIFA strength of the opponent (defender): goals scored against weak teams count less,
+        # reducing strength-of-schedule bias for thin CAF/Curaçao-style teams.
+        self.sos_weighting = sos_weighting
         self.teams_: list[str] = []
         self.attack_: dict[str, float] = {}
         self.defense_: dict[str, float] = {}
@@ -76,6 +96,7 @@ class DixonColesRatings:
             yh, ya = getattr(m, col_h), getattr(m, col_a)
             # skip when both xG columns are exactly 0 — provider returned no shot data,
             # not a genuine 0-xG game (real matches always produce some xG from corners/set-pieces)
+            is_fallback = 0
             if self.response == "xg" and yh == 0.0 and ya == 0.0:
                 if not self.goals_fallback:
                     continue
@@ -83,9 +104,10 @@ class DixonColesRatings:
                 # Scale is consistent: total xG ≈ total goals by calibration, so goals are an
                 # unbiased (if noisier) stand-in when xG is unavailable.
                 yh, ya = float(m.home_goals), float(m.away_goals)
-            rows.append((m.home, m.away, 1, yh))
-            rows.append((m.away, m.home, 0, ya))
-        return pd.DataFrame(rows, columns=["attack", "defense", "is_home", "y"])
+                is_fallback = 1
+            rows.append((m.home, m.away, 1, yh, is_fallback))
+            rows.append((m.away, m.home, 0, ya, is_fallback))
+        return pd.DataFrame(rows, columns=["attack", "defense", "is_home", "y", "is_fallback"])
 
     def fit(self, matches: pd.DataFrame) -> "DixonColesRatings":
         long = self._long_format(matches)
@@ -111,8 +133,19 @@ class DixonColesRatings:
                 X[r, off_fifa + 1] = self.fifa.get(row.defense, 0.0) * self.fifa_scale
         y = long["y"].to_numpy(dtype=float)
 
+        # Build sample weights: 1.0 for xG rows; optionally down-weight fallback rows.
+        w = np.ones(len(long), dtype=float)
+        if self.sos_weighting and self.fifa is not None:
+            for r, row in enumerate(long.itertuples(index=False)):
+                if row.is_fallback:
+                    # row.defense is the opponent team being scored against;
+                    # weak opponent (negative z) → lower weight so their inflated
+                    # goals-against count less in the regression.
+                    z = self.fifa.get(row.defense, 0.0)
+                    w[r] = float(np.clip(SOS_W0 + SOS_K * z, SOS_WLO, SOS_WHI))
+
         model = PoissonRegressor(alpha=self.alpha, max_iter=10000, fit_intercept=True)
-        model.fit(X, y)
+        model.fit(X, y, sample_weight=w)
         coef = model.coef_
         self.intercept_ = float(model.intercept_)
         self.home_adv_ = float(coef[off_home])

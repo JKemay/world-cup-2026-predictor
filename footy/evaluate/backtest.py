@@ -38,7 +38,7 @@ def rps(probs: np.ndarray, outcome: int) -> float:
 
 def leave_one_out(eval_matches: pd.DataFrame, all_matches: pd.DataFrame | None = None,
                   *, alpha: float, fifa: dict, fifa_scale: float, team_effects: bool = True,
-                  goals_fallback: bool = False):
+                  goals_fallback: bool = False, sos_weighting: bool = False):
     """LOO backtest.
 
     Trains on ``all_matches`` minus the held-out row and evaluates on each row
@@ -53,7 +53,8 @@ def leave_one_out(eval_matches: pd.DataFrame, all_matches: pd.DataFrame | None =
         test = eval_matches.loc[i]
         model = DixonColesRatings(alpha=alpha, fifa=fifa, fifa_scale=fifa_scale,
                                   team_effects=team_effects,
-                                  goals_fallback=goals_fallback).fit(train)
+                                  goals_fallback=goals_fallback,
+                                  sos_weighting=sos_weighting).fit(train)
         preds.append(model_probs(model, test["home"], test["away"]))
         actuals.append(actual_outcome(int(test["home_goals"]), int(test["away_goals"])))
     return np.array(preds), np.array(actuals)

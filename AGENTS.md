@@ -54,12 +54,19 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   verifying that a non-trial Sportradar tier populates `method` on non-goal events.
 - **Goals fallback for no-xG matches (`goals_fallback`, default off):** using actual
   goals for matches whose feed lacks shot data lifts thin CAF/Curaçao teams from 2 to
-  12 matches of signal. It improved aggregate RPS only within noise (0.1606 → 0.1586,
-  95% CI straddles 0) and *lowered* top-1 accuracy, while overrating minnows that ran
-  up goals vs weak opposition — e.g. it pushed Netherlands–Tunisia from 65/24/11 to
-  53/30/17 (more generous to the underdog, the wrong direction). The flag exists but
-  ships **off**. The principled fix for thin CAF teams is **strength-of-schedule
-  weighting** (down-weight goals vs weak opponents), not raw goals.
+  12 matches of signal. *Naive* fallback improved aggregate RPS only within noise
+  (0.1606 → 0.1586) but *lowered* top-1 accuracy (67% → 63%) by overrating minnows that
+  ran up goals vs weak opposition (Netherlands–Tunisia 65/24/11 → 53/30/17).
+- **Strength-of-schedule weighting (`sos_weighting`, default off):** the principled fix
+  for the above — down-weights a goals-fallback row by the opponent's FIFA strength
+  (`w = clip(0.5 + 0.30·z_opp, 0.1, 1.0)`), so goals vs weak teams count less. Validated:
+  with `goals_fallback=True, sos_weighting=True` the backtest is ≥ baseline on **all
+  three** metrics (RPS 0.1588, log-loss 0.8653, top-1 **67.3%** — recovers the accuracy
+  naive fallback lost) and pulls Netherlands–Tunisia back to 58/28/14. Still within noise
+  (ΔRPS 95% CI straddles 0) and still credits thin teams a touch more than the prior-only
+  baseline, so it ships **off** pending a deliberate call. Constants are fixed a priori
+  (not tuned on the eval set). To enable: pass `goals_fallback=True, sos_weighting=True`
+  to `DixonColesRatings` / `leave_one_out`.
 
 ## Setup
 
