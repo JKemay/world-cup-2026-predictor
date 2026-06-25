@@ -14,6 +14,7 @@ from footy.ratings.elo import (
     DrawParams,
     _goal_multiplier,
     elo_match_probs,
+    elo_strength,
     expected_score,
     fit_elo,
     update_ratings,
@@ -219,3 +220,61 @@ class TestFitElo:
         probs = predict_wdl(elo, r_h, r_a)
         assert probs.shape == (3,)
         assert probs.sum() == pytest.approx(1.0, abs=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# elo_strength — z-scored final Elo ratings
+# ---------------------------------------------------------------------------
+
+class TestEloStrength:
+    """elo_strength should return z-scored ratings compatible with the fifa= prior."""
+
+    @pytest.fixture(scope="class")
+    def strength_data(self):
+        """Synthetic dataset with a clear strong team (Spain) and a weak team (Gibraltar)."""
+        # Spain wins every match; Gibraltar loses every match; two mid teams play each other.
+        rows = []
+        match_id = 0
+        # Spain beats every other team convincingly (many times)
+        for opponent in ["Gibraltar", "Beta", "Gamma"]:
+            for i in range(4):
+                rows.append({
+                    "match_id": f"m{match_id}", "date": f"2024-01-{match_id+1:02d}T12:00:00+00:00",
+                    "season_id": "s1", "home": "Spain", "away": opponent,
+                    "home_goals": 4, "away_goals": 0,
+                })
+                match_id += 1
+        # Gibraltar loses to everyone
+        for opponent in ["Beta", "Gamma"]:
+            for i in range(3):
+                rows.append({
+                    "match_id": f"m{match_id}", "date": f"2024-02-{match_id+1:02d}T12:00:00+00:00",
+                    "season_id": "s1", "home": opponent, "away": "Gibraltar",
+                    "home_goals": 3, "away_goals": 0,
+                })
+                match_id += 1
+        # Mid teams draw each other
+        rows.append({
+            "match_id": f"m{match_id}", "date": "2024-03-01T12:00:00+00:00",
+            "season_id": "s1", "home": "Beta", "away": "Gamma",
+            "home_goals": 1, "away_goals": 1,
+        })
+        return pd.DataFrame(rows)
+
+    def test_values_are_approximately_z_scored(self, strength_data):
+        """Mean should be ~0 and std should be ~1 across all teams."""
+        z = elo_strength(strength_data)
+        vals = np.array(list(z.values()))
+        assert float(vals.mean()) == pytest.approx(0.0, abs=0.1)
+        assert float(vals.std()) == pytest.approx(1.0, abs=0.15)
+
+    def test_strong_team_above_weak_team(self, strength_data):
+        """Spain (wins everything) must have a higher z-score than Gibraltar (loses everything)."""
+        z = elo_strength(strength_data)
+        assert z["Spain"] > z["Gibraltar"]
+
+    def test_returns_dict_of_floats(self, strength_data):
+        """elo_strength must return dict[str, float]."""
+        z = elo_strength(strength_data)
+        assert isinstance(z, dict)
+        assert all(isinstance(v, float) for v in z.values())

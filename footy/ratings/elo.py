@@ -324,6 +324,35 @@ def fit_elo(
     )
 
 
+def elo_strength(matches: pd.DataFrame) -> dict[str, float]:
+    """Fit Elo on *matches* and return each team's final rating, z-scored.
+
+    The z-scoring (subtract mean, divide by std across all teams) makes the
+    output drop-in compatible with the ``fifa=`` prior argument of
+    ``DixonColesRatings``, which expects standardized strengths on the same
+    scale as ``fifa_strength()``.
+
+    Parameters
+    ----------
+    matches : DataFrame
+        Must contain the columns required by :func:`fit_elo` (``match_id``,
+        ``date``, ``home``, ``away``, ``home_goals``, ``away_goals``).
+
+    Returns
+    -------
+    dict[str, float]
+        Mapping of team name → z-scored Elo rating (mean ≈ 0, std ≈ 1 across
+        the teams present in *matches*).
+    """
+    elo = fit_elo(matches)
+    ratings = elo.ratings
+    vals = np.array(list(ratings.values()), dtype=float)
+    mean, std = float(vals.mean()), float(vals.std())
+    if std == 0.0:
+        return {t: 0.0 for t in ratings}
+    return {t: (v - mean) / std for t, v in ratings.items()}
+
+
 def predict_wdl(
     elo: EloRatings,
     r_home: float,
