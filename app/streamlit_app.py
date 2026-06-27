@@ -112,7 +112,7 @@ def main() -> None:
         st.markdown(
             "Built from Sportradar event data. "
             "[Pipeline & code](https://github.com/JKemay/world-cup-2026-predictor) "
-            "· resume project."
+            "· [Live app](https://world-cup-2026-ml.streamlit.app) · resume project."
         )
 
     tab_predict, tab_ratings, tab_model = st.tabs(["🔮 Predict", "📊 Team ratings", "📈 Model & validation"])

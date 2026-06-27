@@ -1,13 +1,14 @@
 # Football Match Prediction Model
 
 [![CI](https://github.com/JKemay/world-cup-2026-predictor/actions/workflows/ci.yml/badge.svg)](https://github.com/JKemay/world-cup-2026-predictor/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.13-blue.svg)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://world-cup-2026-ml.streamlit.app)
+![Python](https://img.shields.io/badge/python-3.12-blue.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A World Cup 2026 match predictor that **improves on a hand-tuned reference model by
 *fitting* its parameters from event data** instead of guessing them.
 
-**Live demo:** deploy `app/streamlit_app.py` to Streamlit Community Cloud (see [Dashboard](#dashboard) below).
+**Live demo:** [world-cup-2026-ml.streamlit.app](https://world-cup-2026-ml.streamlit.app)
 
 **Pipeline:** Sportradar event data → xG (from shot coordinates) → Dixon-Coles
 attack/defense ratings (FIFA-anchored) → Poisson scoreline grid.
