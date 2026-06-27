@@ -21,6 +21,8 @@ from scipy.optimize import minimize_scalar
 from scipy.stats import poisson
 from sklearn.linear_model import PoissonRegressor
 
+from footy.ratings.bivariate_poisson import bivpois_grid, bivpois_pmf
+
 # ---------------------------------------------------------------------------
 # Strength-of-schedule (SoS) weighting for goals-fallback rows
 # ---------------------------------------------------------------------------
@@ -66,7 +68,7 @@ class DixonColesRatings:
     def __init__(self, alpha: float = 0.5, response: str = "xg",
                  fifa: dict[str, float] | None = None, fifa_scale: float = 1.0,
                  team_effects: bool = True, goals_fallback: bool = False,
-                 sos_weighting: bool = False):
+                 sos_weighting: bool = False, bivariate: bool = False):
         self.alpha = alpha          # L2 strength on per-team adjustments
         self.response = response    # 'xg' (default) or 'goals'
         self.fifa = fifa            # {team: standardized strength} prior, or None
@@ -80,12 +82,15 @@ class DixonColesRatings:
         # by the FIFA strength of the opponent (defender): goals scored against weak teams count less,
         # reducing strength-of-schedule bias for thin CAF/Curaçao-style teams.
         self.sos_weighting = sos_weighting
+        # if True, use bivariate Poisson (KN2003) instead of DC tau correction.
+        self.bivariate = bivariate
         self.teams_: list[str] = []
         self.attack_: dict[str, float] = {}
         self.defense_: dict[str, float] = {}
         self.home_adv_ = 0.0
         self.intercept_ = 0.0
         self.rho_ = 0.0
+        self.lambda3_: float = 0.0
         self.fifa_attack_coef_ = 0.0
         self.fifa_defense_coef_ = 0.0
 
@@ -164,7 +169,10 @@ class DixonColesRatings:
             f = (self.fifa.get(t, 0.0) * self.fifa_scale) if use_fifa else 0.0
             self.attack_[t] = dum_att + fa * f
             self.defense_[t] = dum_def + fd * f
-        self._fit_rho(matches)
+        if self.bivariate:
+            self._fit_lambda3(matches)
+        else:
+            self._fit_rho(matches)
         return self
 
     def expected_goals(self, home: str, away: str) -> tuple[float, float]:
@@ -188,14 +196,32 @@ class DixonColesRatings:
 
         self.rho_ = float(minimize_scalar(nll, bounds=(-0.2, 0.2), method="bounded").x)
 
+    def _fit_lambda3(self, matches: pd.DataFrame) -> None:
+        cases = [
+            (self.expected_goals(m.home, m.away), int(m.home_goals), int(m.away_goals))
+            for m in matches.itertuples(index=False)
+        ]
+
+        def nll(l3: float) -> float:
+            total = 0.0
+            for (lam, mu), hg, ag in cases:
+                p = bivpois_pmf(hg, ag, lam, mu, l3)
+                total -= np.log(max(p, 1e-12))
+            return total
+
+        self.lambda3_ = float(minimize_scalar(nll, bounds=(0.0, 1.0), method="bounded").x)
+
     def scoreline_grid(self, home: str, away: str, max_goals: int = 6):
         lam, mu = self.expected_goals(home, away)
-        k = np.arange(max_goals + 1)
-        grid = np.outer(poisson.pmf(k, lam), poisson.pmf(k, mu))
-        for h in (0, 1):
-            for a in (0, 1):
-                grid[h, a] *= tau(h, a, lam, mu, self.rho_)
-        grid /= grid.sum()
+        if self.bivariate:
+            grid = bivpois_grid(lam, mu, self.lambda3_, max_goals)
+        else:
+            k = np.arange(max_goals + 1)
+            grid = np.outer(poisson.pmf(k, lam), poisson.pmf(k, mu))
+            for h in (0, 1):
+                for a in (0, 1):
+                    grid[h, a] *= tau(h, a, lam, mu, self.rho_)
+            grid /= grid.sum()
         return grid, lam, mu
 
     def ratings_frame(self) -> pd.DataFrame:

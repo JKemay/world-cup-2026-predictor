@@ -6,7 +6,9 @@ import pytest
 
 from footy.evaluate.backtest import (
     actual_outcome,
+    apply_draw_scalar,
     bootstrap_ci,
+    fit_draw_scalar,
     naive_baseline,
     paired_bootstrap,
     per_match_rps,
@@ -306,3 +308,48 @@ class TestPairedBootstrap:
         b = rng.uniform(0.2, 0.4, size=100)
         result = paired_bootstrap(a, b, n_boot=5_000, seed=0)
         assert result["lo"] < 0 < result["hi"]
+
+
+# ---------------------------------------------------------------------------
+# apply_draw_scalar / fit_draw_scalar
+# ---------------------------------------------------------------------------
+
+class TestDrawScalar:
+    def test_identity(self):
+        probs = np.array([[0.6, 0.2, 0.2], [0.3, 0.4, 0.3]])
+        np.testing.assert_allclose(apply_draw_scalar(probs, 1.0), probs)
+
+    def test_1d_identity(self):
+        p = np.array([0.5, 0.3, 0.2])
+        np.testing.assert_allclose(apply_draw_scalar(p, 1.0), p)
+
+    def test_sums_to_one(self):
+        probs = np.array([[0.6, 0.2, 0.2], [0.3, 0.4, 0.3]])
+        result = apply_draw_scalar(probs, 1.5)
+        np.testing.assert_allclose(result.sum(axis=1), np.ones(2))
+
+    def test_draw_increases(self):
+        probs = np.array([[0.6, 0.2, 0.2]])
+        result = apply_draw_scalar(probs, 1.5)
+        assert result[0, 1] > probs[0, 1]
+
+    def test_fit_k_greater_than_one_when_draws_underpredicted(self):
+        """Actuals are all draws, model gives low draw prob → k > 1."""
+        preds = np.tile([0.6, 0.2, 0.2], (20, 1)).astype(float)
+        actuals = np.ones(20, dtype=int)
+        k = fit_draw_scalar(preds, actuals)
+        assert k > 1.0
+
+    def test_fit_k_within_bounds(self):
+        preds = np.tile([0.6, 0.2, 0.2], (20, 1)).astype(float)
+        actuals = np.ones(20, dtype=int)
+        k = fit_draw_scalar(preds, actuals, bounds=(1.0, 3.0))
+        assert 1.0 <= k <= 3.0
+
+    def test_fit_k_does_not_increase_rps(self):
+        preds = np.array([[0.5, 0.25, 0.25]] * 10 + [[0.25, 0.25, 0.5]] * 10, dtype=float)
+        actuals = np.array([1] * 10 + [1] * 10)
+        k = fit_draw_scalar(preds, actuals)
+        rps_base = per_match_rps(preds, actuals).mean()
+        rps_cal = per_match_rps(apply_draw_scalar(preds, k), actuals).mean()
+        assert rps_cal <= rps_base + 1e-9

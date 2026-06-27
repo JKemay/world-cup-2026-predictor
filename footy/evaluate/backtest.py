@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from scipy.optimize import minimize_scalar
 
 from footy.ratings.dixon_coles import DixonColesRatings, grid_summary
 
@@ -36,9 +37,35 @@ def rps(probs: np.ndarray, outcome: int) -> float:
     return float(np.sum((cum_p - cum_o) ** 2) / (len(probs) - 1))
 
 
+def apply_draw_scalar(probs: np.ndarray, k: float) -> np.ndarray:
+    """Multiply P(draw) by k then renormalize. Works on shape (3,) or (N,3)."""
+    out = probs.copy().astype(float)
+    if out.ndim == 1:
+        out[1] *= k
+        s = out.sum()
+        if s > 0:
+            out /= s
+    else:
+        out[:, 1] *= k
+        row_sums = out.sum(axis=1, keepdims=True)
+        nonzero = (row_sums > 0).ravel()
+        out[nonzero] /= row_sums[nonzero]
+    return out
+
+
+def fit_draw_scalar(preds: np.ndarray, actuals: np.ndarray, bounds: tuple = (0.5, 3.0)) -> float:
+    """Minimize mean RPS over k in bounds. Returns fitted float k."""
+    def objective(k: float) -> float:
+        return score(apply_draw_scalar(preds, k), actuals)["rps"]
+
+    result = minimize_scalar(objective, bounds=bounds, method="bounded")
+    return float(result.x)
+
+
 def leave_one_out(eval_matches: pd.DataFrame, all_matches: pd.DataFrame | None = None,
                   *, alpha: float, fifa: dict, fifa_scale: float, team_effects: bool = True,
-                  goals_fallback: bool = False, sos_weighting: bool = False):
+                  goals_fallback: bool = False, sos_weighting: bool = False,
+                  bivariate: bool = False):
     """LOO backtest.
 
     Trains on ``all_matches`` minus the held-out row and evaluates on each row
@@ -54,9 +81,81 @@ def leave_one_out(eval_matches: pd.DataFrame, all_matches: pd.DataFrame | None =
         model = DixonColesRatings(alpha=alpha, fifa=fifa, fifa_scale=fifa_scale,
                                   team_effects=team_effects,
                                   goals_fallback=goals_fallback,
-                                  sos_weighting=sos_weighting).fit(train)
+                                  sos_weighting=sos_weighting,
+                                  bivariate=bivariate).fit(train)
         preds.append(model_probs(model, test["home"], test["away"]))
         actuals.append(actual_outcome(int(test["home_goals"]), int(test["away_goals"])))
+    return np.array(preds), np.array(actuals)
+
+
+def leave_one_out_ol(
+    eval_matches: pd.DataFrame,
+    all_matches: pd.DataFrame | None = None,
+    *,
+    C: float = 1.0,
+) -> tuple[np.ndarray, np.ndarray]:
+    """LOO W/D/L predictions from a multinomial logistic regression on Elo/FIFA features.
+
+    Fast: fits Elo once (pre-match ratings are already leakage-free by construction),
+    then per fold fits a cheap 3-feature LR on the drop-one training set.
+
+    Leakage note: the single global Elo fit means the held-out match influenced
+    post-match Elo updates of later matches — identical approximation to the existing
+    _elo_predictions_wc benchmark. Acceptable and consistent.
+    """
+    from footy.ratings.elo import fit_elo
+    from footy.ratings.fifa import fifa_strength
+    from footy.ratings.ordered_logit import build_features, fit_ordered_logit, predict_wdl_ol
+
+    # Use config WC_SEASON_ID; fall back to None gracefully
+    try:
+        from footy.config import WC_SEASON_ID as _WC_SEASON_ID
+    except ImportError:
+        _WC_SEASON_ID = None
+
+    if all_matches is None:
+        all_matches = eval_matches
+
+    # Fit Elo once on all_matches (leakage-free by construction of pre_match_ratings)
+    elo = fit_elo(all_matches, wc_season_id=_WC_SEASON_ID)
+
+    # FIFA z-scores for all teams in all_matches
+    all_teams = sorted({*all_matches["home"], *all_matches["away"]})
+    fifa_z = fifa_strength(all_teams)
+
+    # Build full feature matrix from all_matches
+    X_all, y_all = build_features(all_matches, elo, fifa_z)
+    assert len(X_all) == len(all_matches), (
+        f"build_features dropped rows ({len(X_all)} vs {len(all_matches)}); "
+        "positional index mapping is invalid — check for NaN goals in all_matches"
+    )
+    all_idx = list(all_matches.index)  # positional mapping
+
+    preds: list[np.ndarray] = []
+    actuals: list[int] = []
+
+    for i, row in eval_matches.iterrows():
+        # Find position of this index in all_matches to drop it
+        if i in all_idx:
+            pos = all_idx.index(i)
+            X_train = np.delete(X_all, pos, axis=0)
+            y_train = np.delete(y_all, pos, axis=0)
+        else:
+            X_train = X_all
+            y_train = y_all
+
+        model = fit_ordered_logit(X_train, y_train, C=C)
+
+        # Build single-row feature for this eval match
+        x_row, _ = build_features(
+            pd.DataFrame([row]),
+            elo,
+            fifa_z,
+        )
+        p = predict_wdl_ol(model, x_row)
+        preds.append(p)
+        actuals.append(actual_outcome(int(row["home_goals"]), int(row["away_goals"])))
+
     return np.array(preds), np.array(actuals)
 
 

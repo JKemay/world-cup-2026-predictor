@@ -151,3 +151,32 @@ class TestDelegation:
         lam, mu = fitted_ensemble.expected_goals("Alpha", "Gamma")
         assert lam > 0
         assert mu > 0
+
+
+# ---------------------------------------------------------------------------
+# draw_k and bivariate params
+# ---------------------------------------------------------------------------
+
+class TestDrawKAndBivariate:
+    def test_draw_k_identity(self, synthetic_matches):
+        """draw_k=1.0 should not change wdl output."""
+        model_default = EnsemblePredictor(draw_k=1.0).fit(synthetic_matches)
+        model_no_k = EnsemblePredictor().fit(synthetic_matches)
+        np.testing.assert_allclose(model_default.wdl("Alpha", "Beta"), model_no_k.wdl("Alpha", "Beta"))
+
+    def test_draw_k_increases_draw(self, synthetic_matches):
+        model = EnsemblePredictor().fit(synthetic_matches)
+        model_k = EnsemblePredictor(draw_k=1.5).fit(synthetic_matches)
+        assert model_k.wdl("Alpha", "Beta")[1] > model.wdl("Alpha", "Beta")[1]
+
+    def test_draw_k_sums_to_one(self, synthetic_matches):
+        model = EnsemblePredictor(draw_k=1.5).fit(synthetic_matches)
+        assert abs(model.wdl("Alpha", "Beta").sum() - 1.0) < 1e-8
+
+    def test_bivariate_smoke(self, synthetic_matches):
+        model = EnsemblePredictor(bivariate=True).fit(synthetic_matches)
+        grid, lam, mu = model.scoreline_grid("Alpha", "Beta")
+        assert grid.shape == (7, 7)
+        assert abs(grid.sum() - 1.0) < 1e-6
+
+

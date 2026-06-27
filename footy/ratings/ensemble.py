@@ -49,12 +49,16 @@ class EnsemblePredictor:
         fifa_scale: float = 1.0,
         team_effects: bool = True,
         weight: float = 0.5,
+        draw_k: float = 1.0,
+        bivariate: bool = False,
     ) -> None:
         self.alpha = alpha
         self.fifa = fifa
         self.fifa_scale = fifa_scale
         self.team_effects = team_effects
         self.weight = weight
+        self.draw_k = draw_k
+        self.bivariate = bivariate
         # Fitted models — populated by fit()
         self.dc_: DixonColesRatings | None = None
         self.elo_: EloRatings | None = None
@@ -82,6 +86,7 @@ class EnsemblePredictor:
             fifa=self.fifa,
             fifa_scale=self.fifa_scale,
             team_effects=self.team_effects,
+            bivariate=self.bivariate,
         ).fit(matches)
 
         # Fit Elo with draw-params calibrated on non-WC data to avoid leakage
@@ -150,5 +155,9 @@ class EnsemblePredictor:
         r_a = self.elo_.ratings.get(away, 1500.0)
         elo_wdl = predict_wdl(self.elo_, r_h, r_a)
 
-        blended = self.weight * dc_wdl + (1.0 - self.weight) * elo_wdl
-        return blended / blended.sum()
+        ens = self.weight * dc_wdl + (1.0 - self.weight) * elo_wdl
+        ens = ens / ens.sum()
+        if self.draw_k != 1.0:
+            from footy.evaluate.backtest import apply_draw_scalar
+            ens = apply_draw_scalar(ens, self.draw_k)
+        return ens

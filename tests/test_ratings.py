@@ -174,3 +174,19 @@ class TestExpectedGoals:
         lam, mu = fitted_model.expected_goals("Chelsea", "Fulham")
         # Home advantage is baked in; lam should exceed mu
         assert lam > mu
+
+
+# ---------------------------------------------------------------------------
+# DixonColesRatings — bivariate mode
+# ---------------------------------------------------------------------------
+
+class TestBivariateMode:
+    def test_bivariate_sets_lambda3(self, synthetic_matches):
+        dc = DixonColesRatings(bivariate=True).fit(synthetic_matches)
+        assert dc.lambda3_ >= 0.0
+        assert dc.rho_ == 0.0  # rho not fitted when bivariate
+
+    def test_bivariate_false_leaves_rho(self, synthetic_matches):
+        dc = DixonColesRatings(bivariate=False).fit(synthetic_matches)
+        assert dc.rho_ != 0.0  # rho is fitted
+        assert dc.lambda3_ == 0.0
