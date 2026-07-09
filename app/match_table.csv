@@ -1,30 +1,30 @@
 match_id,date,season_id,home,away,home_goals,away_goals,home_xg,away_xg
-sr:sport_event:42824593,2023-09-07T22:30:00+00:00,sr:season:109025,Paraguay,Peru,0,0,1.89,0.284
-sr:sport_event:42824595,2023-09-07T23:00:00+00:00,sr:season:109025,Colombia,Venezuela,1,0,2.045,0.36
-sr:sport_event:42824599,2023-09-08T00:00:00+00:00,sr:season:109025,Argentina,Ecuador,1,0,0.978,0.584
-sr:sport_event:42824601,2023-09-08T23:00:00+00:00,sr:season:109025,Uruguay,Chile,3,1,2.795,0.531
-sr:sport_event:42824603,2023-09-09T00:45:00+00:00,sr:season:109025,Brazil,Bolivia,5,1,3.394,0.363
-sr:sport_event:42824605,2023-09-12T20:00:00+00:00,sr:season:109025,Bolivia,Argentina,0,3,0.207,1.442
-sr:sport_event:42824607,2023-09-12T21:00:00+00:00,sr:season:109025,Ecuador,Uruguay,2,1,1.438,0.223
-sr:sport_event:42824609,2023-09-12T22:00:00+00:00,sr:season:109025,Venezuela,Paraguay,1,0,1.534,2.427
-sr:sport_event:42824611,2023-09-13T00:30:00+00:00,sr:season:109025,Chile,Colombia,0,0,0.893,0.527
-sr:sport_event:42824613,2023-09-13T02:00:00+00:00,sr:season:109025,Peru,Brazil,0,1,0.457,1.193
-sr:sport_event:43577453,2023-10-12T23:00:00+00:00,sr:season:109025,Bolivia,Ecuador,1,2,0.878,0.72
-sr:sport_event:43577457,2023-10-12T20:30:00+00:00,sr:season:109025,Colombia,Uruguay,2,2,2.425,1.281
-sr:sport_event:43577461,2023-10-13T00:30:00+00:00,sr:season:109025,Brazil,Venezuela,1,1,1.11,1.197
-sr:sport_event:43577463,2023-10-12T23:00:00+00:00,sr:season:109025,Argentina,Paraguay,1,0,1.246,0.378
-sr:sport_event:43577479,2023-10-17T22:30:00+00:00,sr:season:109025,Paraguay,Bolivia,1,0,1.659,0.398
-sr:sport_event:43577481,2023-10-17T23:30:00+00:00,sr:season:109025,Ecuador,Colombia,0,0,0.643,0.598
+sr:sport_event:42824593,2023-09-07T22:30:00+00:00,sr:season:109025,Paraguay,Peru,0,0,1.79,0.263
+sr:sport_event:42824595,2023-09-07T23:00:00+00:00,sr:season:109025,Colombia,Venezuela,1,0,1.993,0.349
+sr:sport_event:42824599,2023-09-08T00:00:00+00:00,sr:season:109025,Argentina,Ecuador,1,0,0.919,0.555
+sr:sport_event:42824601,2023-09-08T23:00:00+00:00,sr:season:109025,Uruguay,Chile,3,1,2.681,0.499
+sr:sport_event:42824603,2023-09-09T00:45:00+00:00,sr:season:109025,Brazil,Bolivia,5,1,3.26,0.338
+sr:sport_event:42824605,2023-09-12T20:00:00+00:00,sr:season:109025,Bolivia,Argentina,0,3,0.189,1.356
+sr:sport_event:42824607,2023-09-12T21:00:00+00:00,sr:season:109025,Ecuador,Uruguay,2,1,1.365,0.211
+sr:sport_event:42824609,2023-09-12T22:00:00+00:00,sr:season:109025,Venezuela,Paraguay,1,0,1.464,2.32
+sr:sport_event:42824611,2023-09-13T00:30:00+00:00,sr:season:109025,Chile,Colombia,0,0,0.846,0.501
+sr:sport_event:42824613,2023-09-13T02:00:00+00:00,sr:season:109025,Peru,Brazil,0,1,0.435,1.143
+sr:sport_event:43577453,2023-10-12T23:00:00+00:00,sr:season:109025,Bolivia,Ecuador,1,2,0.814,0.676
+sr:sport_event:43577457,2023-10-12T20:30:00+00:00,sr:season:109025,Colombia,Uruguay,2,2,2.352,1.212
+sr:sport_event:43577461,2023-10-13T00:30:00+00:00,sr:season:109025,Brazil,Venezuela,1,1,1.049,1.15
+sr:sport_event:43577463,2023-10-12T23:00:00+00:00,sr:season:109025,Argentina,Paraguay,1,0,1.177,0.362
+sr:sport_event:43577479,2023-10-17T22:30:00+00:00,sr:season:109025,Paraguay,Bolivia,1,0,1.579,0.376
+sr:sport_event:43577481,2023-10-17T23:30:00+00:00,sr:season:109025,Ecuador,Colombia,0,0,0.611,0.57
 sr:sport_event:43577487,2023-10-18T00:00:00+00:00,sr:season:109025,Uruguay,Brazil,2,0,0.0,0.0
-sr:sport_event:43577489,2023-10-18T02:00:00+00:00,sr:season:109025,Peru,Argentina,0,2,0.606,0.945
-sr:sport_event:44832256,2023-11-16T22:00:00+00:00,sr:season:109025,Venezuela,Ecuador,0,0,0.417,0.419
-sr:sport_event:44832390,2023-11-17T00:00:00+00:00,sr:season:109025,Colombia,Brazil,2,1,2.593,1.503
-sr:sport_event:44832392,2023-11-17T00:00:00+00:00,sr:season:109025,Argentina,Uruguay,0,2,0.886,0.797
-sr:sport_event:44832396,2023-11-21T23:00:00+00:00,sr:season:109025,Paraguay,Colombia,0,1,1.343,1.279
-sr:sport_event:44832398,2023-11-21T23:30:00+00:00,sr:season:109025,Uruguay,Bolivia,3,0,1.93,0.187
-sr:sport_event:44832452,2023-11-21T23:30:00+00:00,sr:season:109025,Ecuador,Chile,1,0,0.823,0.526
-sr:sport_event:44832454,2023-11-22T00:30:00+00:00,sr:season:109025,Brazil,Argentina,0,1,0.363,0.601
-sr:sport_event:44832802,2023-11-17T00:30:00+00:00,sr:season:109025,Chile,Paraguay,0,0,1.024,0.95
+sr:sport_event:43577489,2023-10-18T02:00:00+00:00,sr:season:109025,Peru,Argentina,0,2,0.577,0.891
+sr:sport_event:44832256,2023-11-16T22:00:00+00:00,sr:season:109025,Venezuela,Ecuador,0,0,0.396,0.391
+sr:sport_event:44832390,2023-11-17T00:00:00+00:00,sr:season:109025,Colombia,Brazil,2,1,2.471,1.425
+sr:sport_event:44832392,2023-11-17T00:00:00+00:00,sr:season:109025,Argentina,Uruguay,0,2,0.842,0.757
+sr:sport_event:44832396,2023-11-21T23:00:00+00:00,sr:season:109025,Paraguay,Colombia,0,1,1.282,1.22
+sr:sport_event:44832398,2023-11-21T23:30:00+00:00,sr:season:109025,Uruguay,Bolivia,3,0,1.83,0.174
+sr:sport_event:44832452,2023-11-21T23:30:00+00:00,sr:season:109025,Ecuador,Chile,1,0,0.769,0.488
+sr:sport_event:44832454,2023-11-22T00:30:00+00:00,sr:season:109025,Brazil,Argentina,0,1,0.343,0.572
+sr:sport_event:44832802,2023-11-17T00:30:00+00:00,sr:season:109025,Chile,Paraguay,0,0,0.97,0.902
 sr:sport_event:45041608,2023-11-16T16:00:00+00:00,sr:season:112442,Egypt,Djibouti,6,0,0.0,0.0
 sr:sport_event:45042094,2023-11-19T16:00:00+00:00,sr:season:112442,Sierra Leone,Egypt,0,2,0.0,0.0
 sr:sport_event:45042492,2023-11-15T16:00:00+00:00,sr:season:112442,Congo DR,Mauritania,2,0,0.0,0.0
@@ -132,167 +132,191 @@ sr:sport_event:48855989,2024-06-10T19:00:00+00:00,sr:season:112442,Ghana,Central
 sr:sport_event:48856099,2025-03-21T19:00:00+00:00,sr:season:112442,Ghana,Chad,5,0,0.0,0.0
 sr:sport_event:48856109,2025-03-24T19:00:00+00:00,sr:season:112442,Madagascar,Ghana,0,3,0.0,0.0
 sr:sport_event:50107161,2024-06-05T19:00:00+00:00,sr:season:112442,Tunisia,Equatorial Guinea,1,0,0.0,0.0
-sr:sport_event:52772385,2024-09-06T00:00:00+00:00,sr:season:109025,Argentina,Chile,3,0,1.926,0.463
-sr:sport_event:52772387,2024-09-06T23:30:00+00:00,sr:season:109025,Uruguay,Paraguay,0,0,0.743,0.618
-sr:sport_event:52772389,2024-09-07T01:00:00+00:00,sr:season:109025,Brazil,Ecuador,1,0,0.55,0.817
-sr:sport_event:52772391,2024-09-07T01:30:00+00:00,sr:season:109025,Peru,Colombia,1,1,1.364,1.813
-sr:sport_event:52772393,2024-09-10T20:30:00+00:00,sr:season:109025,Colombia,Argentina,2,1,0.873,1.343
-sr:sport_event:52772395,2024-09-10T21:00:00+00:00,sr:season:109025,Ecuador,Peru,1,0,1.266,0.066
-sr:sport_event:52772399,2024-09-10T22:00:00+00:00,sr:season:109025,Venezuela,Uruguay,0,0,1.085,0.419
-sr:sport_event:52772401,2024-09-11T00:30:00+00:00,sr:season:109025,Paraguay,Brazil,1,0,0.681,0.663
+sr:sport_event:52772385,2024-09-06T00:00:00+00:00,sr:season:109025,Argentina,Chile,3,0,1.83,0.438
+sr:sport_event:52772387,2024-09-06T23:30:00+00:00,sr:season:109025,Uruguay,Paraguay,0,0,0.697,0.587
+sr:sport_event:52772389,2024-09-07T01:00:00+00:00,sr:season:109025,Brazil,Ecuador,1,0,0.515,0.77
+sr:sport_event:52772391,2024-09-07T01:30:00+00:00,sr:season:109025,Peru,Colombia,1,1,1.338,1.736
+sr:sport_event:52772393,2024-09-10T20:30:00+00:00,sr:season:109025,Colombia,Argentina,2,1,0.829,1.279
+sr:sport_event:52772395,2024-09-10T21:00:00+00:00,sr:season:109025,Ecuador,Peru,1,0,1.209,0.06
+sr:sport_event:52772399,2024-09-10T22:00:00+00:00,sr:season:109025,Venezuela,Uruguay,0,0,1.014,0.392
+sr:sport_event:52772401,2024-09-11T00:30:00+00:00,sr:season:109025,Paraguay,Brazil,1,0,0.645,0.623
 sr:sport_event:53433411,2024-10-11T02:00:00+00:00,sr:season:121357,New Zealand,Tahiti,0,0,0.0,0.0
 sr:sport_event:53433441,2024-11-15T06:30:00+00:00,sr:season:121357,New Zealand,Vanuatu,0,0,0.0,0.0
 sr:sport_event:53437569,2024-11-18T06:30:00+00:00,sr:season:121357,Samoa,New Zealand,0,0,0.0,0.0
-sr:sport_event:53624645,2024-10-10T20:00:00+00:00,sr:season:109025,Bolivia,Colombia,1,0,0.901,2.025
-sr:sport_event:53624647,2024-10-10T21:00:00+00:00,sr:season:109025,Ecuador,Paraguay,0,0,1.502,0.323
-sr:sport_event:53624649,2024-10-10T21:30:00+00:00,sr:season:109025,Venezuela,Argentina,1,1,1.709,0.965
-sr:sport_event:53624651,2024-10-11T00:00:00+00:00,sr:season:109025,Chile,Brazil,1,2,0.827,1.387
-sr:sport_event:53624653,2024-10-12T01:30:00+00:00,sr:season:109025,Peru,Uruguay,1,0,0.993,0.326
-sr:sport_event:53624655,2024-10-15T20:30:00+00:00,sr:season:109025,Colombia,Chile,4,0,1.533,0.478
-sr:sport_event:53624657,2024-10-15T23:00:00+00:00,sr:season:109025,Paraguay,Venezuela,2,1,1.381,0.472
-sr:sport_event:53624659,2024-10-15T23:30:00+00:00,sr:season:109025,Uruguay,Ecuador,0,0,1.193,0.603
-sr:sport_event:53624661,2024-10-16T00:00:00+00:00,sr:season:109025,Argentina,Bolivia,6,0,2.507,0.167
-sr:sport_event:53624663,2024-10-16T00:45:00+00:00,sr:season:109025,Brazil,Peru,4,0,1.851,0.212
-sr:sport_event:54504391,2024-11-14T23:30:00+00:00,sr:season:109025,Paraguay,Argentina,2,1,1.325,0.913
-sr:sport_event:54622885,2024-11-15T00:00:00+00:00,sr:season:109025,Ecuador,Bolivia,4,0,3.037,0.08
-sr:sport_event:54622887,2024-11-16T00:00:00+00:00,sr:season:109025,Uruguay,Colombia,3,2,1.451,1.45
-sr:sport_event:54622891,2024-11-14T21:00:00+00:00,sr:season:109025,Venezuela,Brazil,1,1,1.162,0.628
-sr:sport_event:54622931,2024-11-19T20:00:00+00:00,sr:season:109025,Bolivia,Paraguay,2,2,1.073,1.133
-sr:sport_event:54622933,2024-11-19T23:00:00+00:00,sr:season:109025,Colombia,Ecuador,0,1,2.081,0.247
-sr:sport_event:54622939,2024-11-20T00:00:00+00:00,sr:season:109025,Argentina,Peru,1,0,1.519,0.178
-sr:sport_event:54622941,2024-11-20T00:45:00+00:00,sr:season:109025,Brazil,Uruguay,1,1,1.313,0.598
-sr:sport_event:55623867,2025-03-21T23:30:00+00:00,sr:season:109025,Uruguay,Argentina,0,1,0.16,0.84
-sr:sport_event:55623885,2025-03-21T00:45:00+00:00,sr:season:109025,Brazil,Colombia,2,1,1.153,0.657
-sr:sport_event:55623887,2025-03-20T23:00:00+00:00,sr:season:109025,Paraguay,Chile,1,0,2.218,0.698
-sr:sport_event:55623897,2025-03-21T21:00:00+00:00,sr:season:109025,Ecuador,Venezuela,2,1,1.108,1.351
-sr:sport_event:55623909,2025-03-26T00:00:00+00:00,sr:season:109025,Colombia,Paraguay,2,2,1.277,1.807
-sr:sport_event:55623917,2025-03-25T20:00:00+00:00,sr:season:109025,Bolivia,Uruguay,0,0,2.334,0.868
-sr:sport_event:55623919,2025-03-26T00:00:00+00:00,sr:season:109025,Argentina,Brazil,4,1,1.534,0.257
-sr:sport_event:55623921,2025-03-26T00:00:00+00:00,sr:season:109025,Chile,Ecuador,0,0,1.605,0.432
+sr:sport_event:53452503,2026-07-03T18:00:00+00:00,sr:season:101177,Australia,Egypt,1,1,2.053,1.72
+sr:sport_event:53452505,2026-07-03T03:00:00+00:00,sr:season:101177,Switzerland,Algeria,2,0,2.479,1.008
+sr:sport_event:53452507,2026-07-04T01:30:00+00:00,sr:season:101177,Colombia,Ghana,1,0,2.501,0.684
+sr:sport_event:53452509,2026-07-04T21:00:00+00:00,sr:season:101177,Paraguay,France,0,1,0.388,1.202
+sr:sport_event:53452511,2026-07-04T17:00:00+00:00,sr:season:101177,Canada,Morocco,0,3,1.248,0.616
+sr:sport_event:53452513,2026-07-06T19:00:00+00:00,sr:season:101177,Portugal,Spain,0,1,1.253,1.542
+sr:sport_event:53452515,2026-07-07T00:00:00+00:00,sr:season:101177,USA,Belgium,1,4,1.147,2.628
+sr:sport_event:53452517,2026-07-05T20:00:00+00:00,sr:season:101177,Brazil,Norway,1,2,0.993,1.253
+sr:sport_event:53452519,2026-07-06T01:00:00+00:00,sr:season:101177,Mexico,England,2,3,3.452,0.781
+sr:sport_event:53452521,2026-07-07T16:00:00+00:00,sr:season:101177,Argentina,Egypt,3,2,2.515,0.785
+sr:sport_event:53452523,2026-07-07T20:00:00+00:00,sr:season:101177,Switzerland,Colombia,0,0,0.698,1.796
+sr:sport_event:53452541,2026-06-29T20:30:00+00:00,sr:season:101177,Germany,Paraguay,1,1,3.366,0.916
+sr:sport_event:53452543,2026-06-30T21:00:00+00:00,sr:season:101177,France,Sweden,3,0,2.896,1.19
+sr:sport_event:53452545,2026-06-28T19:00:00+00:00,sr:season:101177,South Africa,Canada,0,1,0.452,2.279
+sr:sport_event:53452547,2026-06-30T01:00:00+00:00,sr:season:101177,Netherlands,Morocco,1,1,0.869,1.496
+sr:sport_event:53452549,2026-07-02T23:00:00+00:00,sr:season:101177,Portugal,Croatia,2,1,2.214,1.941
+sr:sport_event:53452551,2026-07-02T19:00:00+00:00,sr:season:101177,Spain,Austria,3,0,3.172,0.746
+sr:sport_event:53452553,2026-07-02T00:00:00+00:00,sr:season:101177,USA,Bosnia and Herzegovina,2,0,1.728,0.938
+sr:sport_event:53452555,2026-07-01T20:00:00+00:00,sr:season:101177,Belgium,Senegal,3,2,2.502,3.068
+sr:sport_event:53452557,2026-06-29T17:00:00+00:00,sr:season:101177,Brazil,Japan,2,1,2.912,0.752
+sr:sport_event:53452561,2026-06-30T17:00:00+00:00,sr:season:101177,Ivory Coast,Norway,1,2,1.694,2.248
+sr:sport_event:53452563,2026-07-01T02:00:00+00:00,sr:season:101177,Mexico,Ecuador,2,0,2.061,0.925
+sr:sport_event:53452565,2026-07-01T16:00:00+00:00,sr:season:101177,England,Congo DR,2,1,2.542,0.818
+sr:sport_event:53452569,2026-07-03T22:00:00+00:00,sr:season:101177,Argentina,Cape Verde,3,2,3.15,1.201
+sr:sport_event:53624645,2024-10-10T20:00:00+00:00,sr:season:109025,Bolivia,Colombia,1,0,0.851,1.92
+sr:sport_event:53624647,2024-10-10T21:00:00+00:00,sr:season:109025,Ecuador,Paraguay,0,0,1.423,0.308
+sr:sport_event:53624649,2024-10-10T21:30:00+00:00,sr:season:109025,Venezuela,Argentina,1,1,1.66,0.931
+sr:sport_event:53624651,2024-10-11T00:00:00+00:00,sr:season:109025,Chile,Brazil,1,2,0.788,1.329
+sr:sport_event:53624653,2024-10-12T01:30:00+00:00,sr:season:109025,Peru,Uruguay,1,0,0.955,0.306
+sr:sport_event:53624655,2024-10-15T20:30:00+00:00,sr:season:109025,Colombia,Chile,4,0,1.459,0.455
+sr:sport_event:53624657,2024-10-15T23:00:00+00:00,sr:season:109025,Paraguay,Venezuela,2,1,1.329,0.441
+sr:sport_event:53624659,2024-10-15T23:30:00+00:00,sr:season:109025,Uruguay,Ecuador,0,0,1.13,0.568
+sr:sport_event:53624661,2024-10-16T00:00:00+00:00,sr:season:109025,Argentina,Bolivia,6,0,2.397,0.159
+sr:sport_event:53624663,2024-10-16T00:45:00+00:00,sr:season:109025,Brazil,Peru,4,0,1.764,0.195
+sr:sport_event:54504391,2024-11-14T23:30:00+00:00,sr:season:109025,Paraguay,Argentina,2,1,1.277,0.871
+sr:sport_event:54622885,2024-11-15T00:00:00+00:00,sr:season:109025,Ecuador,Bolivia,4,0,2.877,0.074
+sr:sport_event:54622887,2024-11-16T00:00:00+00:00,sr:season:109025,Uruguay,Colombia,3,2,1.393,1.38
+sr:sport_event:54622891,2024-11-14T21:00:00+00:00,sr:season:109025,Venezuela,Brazil,1,1,1.109,0.594
+sr:sport_event:54622931,2024-11-19T20:00:00+00:00,sr:season:109025,Bolivia,Paraguay,2,2,1.017,1.071
+sr:sport_event:54622933,2024-11-19T23:00:00+00:00,sr:season:109025,Colombia,Ecuador,0,1,1.973,0.234
+sr:sport_event:54622939,2024-11-20T00:00:00+00:00,sr:season:109025,Argentina,Peru,1,0,1.443,0.165
+sr:sport_event:54622941,2024-11-20T00:45:00+00:00,sr:season:109025,Brazil,Uruguay,1,1,1.249,0.565
+sr:sport_event:55623867,2025-03-21T23:30:00+00:00,sr:season:109025,Uruguay,Argentina,0,1,0.148,0.792
+sr:sport_event:55623885,2025-03-21T00:45:00+00:00,sr:season:109025,Brazil,Colombia,2,1,1.094,0.625
+sr:sport_event:55623887,2025-03-20T23:00:00+00:00,sr:season:109025,Paraguay,Chile,1,0,2.13,0.658
+sr:sport_event:55623897,2025-03-21T21:00:00+00:00,sr:season:109025,Ecuador,Venezuela,2,1,1.048,1.293
+sr:sport_event:55623909,2025-03-26T00:00:00+00:00,sr:season:109025,Colombia,Paraguay,2,2,1.218,1.713
+sr:sport_event:55623917,2025-03-25T20:00:00+00:00,sr:season:109025,Bolivia,Uruguay,0,0,2.195,0.82
+sr:sport_event:55623919,2025-03-26T00:00:00+00:00,sr:season:109025,Argentina,Brazil,4,1,1.453,0.243
+sr:sport_event:55623921,2025-03-26T00:00:00+00:00,sr:season:109025,Chile,Ecuador,0,0,1.522,0.411
 sr:sport_event:55731571,2025-03-21T06:00:00+00:00,sr:season:121357,New Zealand,Fiji,0,0,0.0,0.0
-sr:sport_event:56418319,2025-09-05T18:45:00+00:00,sr:season:127075,Slovenia,Sweden,2,2,1.203,0.853
-sr:sport_event:56418321,2025-09-05T18:45:00+00:00,sr:season:127075,Switzerland,Kosovo,4,0,1.152,0.608
-sr:sport_event:56418323,2025-09-08T18:45:00+00:00,sr:season:127075,Kosovo,Sweden,2,0,1.555,1.095
-sr:sport_event:56418325,2025-09-08T18:45:00+00:00,sr:season:127075,Switzerland,Slovenia,3,0,1.69,0.544
-sr:sport_event:56418329,2025-10-10T18:45:00+00:00,sr:season:127075,Sweden,Switzerland,0,2,0.977,1.284
-sr:sport_event:56418331,2025-10-13T18:45:00+00:00,sr:season:127075,Slovenia,Switzerland,0,0,0.179,0.707
-sr:sport_event:56418333,2025-10-13T18:45:00+00:00,sr:season:127075,Sweden,Kosovo,0,1,2.14,0.855
-sr:sport_event:56418337,2025-11-15T19:45:00+00:00,sr:season:127075,Switzerland,Sweden,4,1,1.216,0.829
-sr:sport_event:56418339,2025-11-18T19:45:00+00:00,sr:season:127075,Kosovo,Switzerland,1,1,0.845,0.695
-sr:sport_event:56418341,2025-11-18T19:45:00+00:00,sr:season:127075,Sweden,Slovenia,1,1,1.211,0.893
-sr:sport_event:56418457,2025-09-04T18:45:00+00:00,sr:season:127075,Slovakia,Germany,2,0,0.675,1.767
-sr:sport_event:56418461,2025-09-07T18:45:00+00:00,sr:season:127075,Germany,Northern Ireland,3,1,1.439,0.317
-sr:sport_event:56418465,2025-10-10T18:45:00+00:00,sr:season:127075,Germany,Luxembourg,4,0,2.681,0.099
-sr:sport_event:56418467,2025-10-13T18:45:00+00:00,sr:season:127075,Northern Ireland,Germany,0,1,0.88,0.823
-sr:sport_event:56418471,2025-11-14T19:45:00+00:00,sr:season:127075,Luxembourg,Germany,0,2,0.69,1.809
-sr:sport_event:56418477,2025-11-17T19:45:00+00:00,sr:season:127075,Germany,Slovakia,6,0,3.265,0.815
-sr:sport_event:56418483,2025-09-05T18:45:00+00:00,sr:season:127075,Denmark,Scotland,0,0,0.969,0.985
-sr:sport_event:56418485,2025-09-08T18:45:00+00:00,sr:season:127075,Belarus,Scotland,0,2,0.484,1.306
-sr:sport_event:56418491,2025-10-09T18:45:00+00:00,sr:season:127075,Scotland,Greece,3,1,0.572,0.689
-sr:sport_event:56418493,2025-10-12T16:00:00+00:00,sr:season:127075,Scotland,Belarus,2,1,1.271,1.749
-sr:sport_event:56418497,2025-11-15T19:45:00+00:00,sr:season:127075,Greece,Scotland,3,2,2.207,1.555
-sr:sport_event:56418503,2025-11-18T19:45:00+00:00,sr:season:127075,Scotland,Denmark,4,2,1.574,1.794
-sr:sport_event:56418507,2025-09-05T18:45:00+00:00,sr:season:127075,Ukraine,France,0,2,0.551,1.718
-sr:sport_event:56418511,2025-09-09T18:45:00+00:00,sr:season:127075,France,Iceland,2,1,1.948,0.779
-sr:sport_event:56418515,2025-10-10T18:45:00+00:00,sr:season:127075,France,Azerbaijan,3,0,1.582,0.157
-sr:sport_event:56418517,2025-10-13T18:45:00+00:00,sr:season:127075,Iceland,France,2,2,0.745,2.451
-sr:sport_event:56418523,2025-11-13T19:45:00+00:00,sr:season:127075,France,Ukraine,4,0,1.947,0.0
-sr:sport_event:56418525,2025-11-16T17:00:00+00:00,sr:season:127075,Azerbaijan,France,1,3,0.79,1.664
-sr:sport_event:56418529,2025-09-04T16:00:00+00:00,sr:season:127075,Georgia,Turkiye,2,3,0.768,0.77
-sr:sport_event:56418531,2025-09-04T18:45:00+00:00,sr:season:127075,Bulgaria,Spain,0,3,0.377,2.565
-sr:sport_event:56418535,2025-09-07T18:45:00+00:00,sr:season:127075,Turkiye,Spain,0,6,0.602,2.485
-sr:sport_event:56418537,2025-10-11T18:45:00+00:00,sr:season:127075,Bulgaria,Turkiye,1,6,0.716,1.584
-sr:sport_event:56418539,2025-10-11T18:45:00+00:00,sr:season:127075,Spain,Georgia,2,0,2.51,0.0
-sr:sport_event:56418541,2025-10-14T18:45:00+00:00,sr:season:127075,Turkiye,Georgia,4,1,1.781,1.111
-sr:sport_event:56418543,2025-10-14T18:45:00+00:00,sr:season:127075,Spain,Bulgaria,4,0,2.513,0.317
-sr:sport_event:56418545,2025-11-15T17:00:00+00:00,sr:season:127075,Georgia,Spain,0,4,0.637,1.004
-sr:sport_event:56418547,2025-11-15T17:00:00+00:00,sr:season:127075,Turkiye,Bulgaria,2,0,1.782,0.597
-sr:sport_event:56418551,2025-11-18T19:45:00+00:00,sr:season:127075,Spain,Turkiye,2,2,2.318,0.947
-sr:sport_event:56418553,2025-09-06T16:00:00+00:00,sr:season:127075,Armenia,Portugal,0,5,0.382,3.086
-sr:sport_event:56418559,2025-09-09T18:45:00+00:00,sr:season:127075,Hungary,Portugal,2,3,0.744,2.172
-sr:sport_event:56418563,2025-10-11T18:45:00+00:00,sr:season:127075,Portugal,Ireland,1,0,3.37,0.212
-sr:sport_event:56418567,2025-10-14T18:45:00+00:00,sr:season:127075,Portugal,Hungary,2,2,1.813,1.647
-sr:sport_event:56418571,2025-11-13T19:45:00+00:00,sr:season:127075,Ireland,Portugal,2,0,0.734,1.713
-sr:sport_event:56418575,2025-11-16T14:00:00+00:00,sr:season:127075,Portugal,Armenia,9,1,3.911,0.371
-sr:sport_event:56418577,2025-03-21T19:45:00+00:00,sr:season:127075,Romania,Bosnia and Herzegovina,0,1,1.294,0.358
-sr:sport_event:56418581,2025-03-24T19:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Cyprus,2,1,1.815,1.307
-sr:sport_event:56418585,2025-06-07T13:00:00+00:00,sr:season:127075,Bosnia and Herzegovina,San Marino,1,0,1.352,0.558
-sr:sport_event:56418587,2025-06-07T18:45:00+00:00,sr:season:127075,Austria,Romania,2,1,1.228,0.844
-sr:sport_event:56418591,2025-06-10T18:45:00+00:00,sr:season:127075,San Marino,Austria,0,4,0.515,1.906
-sr:sport_event:56418593,2025-09-06T18:45:00+00:00,sr:season:127075,Austria,Cyprus,1,0,1.192,2.044
-sr:sport_event:56418595,2025-09-06T18:45:00+00:00,sr:season:127075,San Marino,Bosnia and Herzegovina,0,6,0.188,2.366
-sr:sport_event:56418597,2025-09-09T18:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Austria,1,2,1.482,1.352
-sr:sport_event:56418601,2025-10-09T18:45:00+00:00,sr:season:127075,Austria,San Marino,10,0,3.28,0.566
-sr:sport_event:56418603,2025-10-09T18:45:00+00:00,sr:season:127075,Cyprus,Bosnia and Herzegovina,2,2,1.018,1.017
-sr:sport_event:56418607,2025-10-12T18:45:00+00:00,sr:season:127075,Romania,Austria,1,0,0.868,0.226
-sr:sport_event:56418609,2025-11-15T17:00:00+00:00,sr:season:127075,Cyprus,Austria,0,2,0.218,1.289
-sr:sport_event:56418611,2025-11-15T19:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Romania,3,1,1.103,0.845
-sr:sport_event:56418613,2025-11-18T19:45:00+00:00,sr:season:127075,Austria,Bosnia and Herzegovina,1,1,1.377,0.436
-sr:sport_event:56418617,2025-03-22T17:00:00+00:00,sr:season:127075,Moldova,Norway,0,5,1.601,2.855
-sr:sport_event:56418621,2025-03-25T19:45:00+00:00,sr:season:127075,Israel,Norway,2,4,1.003,1.988
-sr:sport_event:56418627,2025-06-06T18:45:00+00:00,sr:season:127075,Norway,Italy,3,0,1.001,0.667
-sr:sport_event:56418629,2025-06-09T18:45:00+00:00,sr:season:127075,Estonia,Norway,0,1,0.892,2.396
-sr:sport_event:56418639,2025-09-09T18:45:00+00:00,sr:season:127075,Norway,Moldova,11,1,2.999,0.218
-sr:sport_event:56418641,2025-10-11T16:00:00+00:00,sr:season:127075,Norway,Israel,5,0,1.9,0.257
-sr:sport_event:56418649,2025-11-13T17:00:00+00:00,sr:season:127075,Norway,Estonia,4,1,1.875,0.325
-sr:sport_event:56418655,2025-11-16T19:45:00+00:00,sr:season:127075,Italy,Norway,1,4,1.177,1.267
-sr:sport_event:56418665,2025-06-06T18:45:00+00:00,sr:season:127075,North Macedonia,Belgium,1,1,0.76,1.322
-sr:sport_event:56418671,2025-06-09T18:45:00+00:00,sr:season:127075,Belgium,Wales,4,3,1.001,1.089
-sr:sport_event:56418675,2025-09-04T18:45:00+00:00,sr:season:127075,Liechtenstein,Belgium,0,6,0.0,3.775
-sr:sport_event:56418679,2025-09-07T18:45:00+00:00,sr:season:127075,Belgium,Kazakhstan,6,0,3.489,0.308
-sr:sport_event:56418683,2025-10-10T18:45:00+00:00,sr:season:127075,Belgium,North Macedonia,0,0,1.997,0.086
-sr:sport_event:56418687,2025-10-13T18:45:00+00:00,sr:season:127075,Wales,Belgium,2,4,0.908,1.068
-sr:sport_event:56418689,2025-11-15T14:00:00+00:00,sr:season:127075,Kazakhstan,Belgium,1,1,0.329,1.32
-sr:sport_event:56418693,2025-11-18T19:45:00+00:00,sr:season:127075,Belgium,Liechtenstein,7,0,3.029,0.055
-sr:sport_event:56418697,2025-03-21T19:45:00+00:00,sr:season:127075,England,Albania,2,0,0.996,0.189
-sr:sport_event:56418703,2025-03-24T19:45:00+00:00,sr:season:127075,England,Latvia,3,0,2.781,0.185
-sr:sport_event:56418705,2025-06-07T16:00:00+00:00,sr:season:127075,Andorra,England,0,1,0.377,1.749
-sr:sport_event:56418715,2025-09-06T16:00:00+00:00,sr:season:127075,England,Andorra,2,0,1.564,0.132
-sr:sport_event:56418719,2025-09-09T18:45:00+00:00,sr:season:127075,Serbia,England,0,5,0.186,2.162
-sr:sport_event:56418727,2025-10-14T18:45:00+00:00,sr:season:127075,Latvia,England,0,5,0.265,1.731
-sr:sport_event:56418731,2025-11-13T19:45:00+00:00,sr:season:127075,England,Serbia,2,0,2.075,0.94
-sr:sport_event:56418733,2025-11-16T17:00:00+00:00,sr:season:127075,Albania,England,0,2,0.853,2.388
-sr:sport_event:56418747,2025-06-07T18:45:00+00:00,sr:season:127075,Finland,Netherlands,0,2,0.481,1.899
-sr:sport_event:56418751,2025-06-10T18:45:00+00:00,sr:season:127075,Netherlands,Malta,8,0,2.595,0.449
-sr:sport_event:56418755,2025-09-04T18:45:00+00:00,sr:season:127075,Netherlands,Poland,1,1,1.032,0.722
-sr:sport_event:56418757,2025-09-07T16:00:00+00:00,sr:season:127075,Lithuania,Netherlands,2,3,0.449,1.547
-sr:sport_event:56418763,2025-10-09T18:45:00+00:00,sr:season:127075,Malta,Netherlands,0,4,0.308,1.436
-sr:sport_event:56418767,2025-10-12T16:00:00+00:00,sr:season:127075,Netherlands,Finland,4,0,1.742,1.04
-sr:sport_event:56418771,2025-11-14T19:45:00+00:00,sr:season:127075,Poland,Netherlands,1,1,0.937,0.468
-sr:sport_event:56418775,2025-11-17T19:45:00+00:00,sr:season:127075,Netherlands,Lithuania,4,0,1.709,0.45
-sr:sport_event:56418785,2025-03-22T19:45:00+00:00,sr:season:127075,Czechia,Faroe Islands,2,1,1.795,0.354
-sr:sport_event:56418787,2025-03-25T19:45:00+00:00,sr:season:127075,Gibraltar,Czechia,0,4,0.0,3.082
-sr:sport_event:56418791,2025-06-06T18:45:00+00:00,sr:season:127075,Czechia,Montenegro,2,0,1.285,0.43
-sr:sport_event:56418793,2025-06-06T18:45:00+00:00,sr:season:127075,Gibraltar,Croatia,0,7,0.206,2.843
-sr:sport_event:56418797,2025-06-09T18:45:00+00:00,sr:season:127075,Croatia,Czechia,5,1,1.229,0.744
-sr:sport_event:56418799,2025-09-05T18:45:00+00:00,sr:season:127075,Faroe Islands,Croatia,0,1,0.843,2.765
-sr:sport_event:56418801,2025-09-05T18:45:00+00:00,sr:season:127075,Montenegro,Czechia,0,2,1.816,3.479
-sr:sport_event:56418805,2025-09-08T18:45:00+00:00,sr:season:127075,Croatia,Montenegro,4,0,3.75,0.086
-sr:sport_event:56418807,2025-10-09T18:45:00+00:00,sr:season:127075,Czechia,Croatia,0,0,1.026,0.994
-sr:sport_event:56418811,2025-10-12T16:00:00+00:00,sr:season:127075,Faroe Islands,Czechia,2,1,0.528,0.869
-sr:sport_event:56418813,2025-10-12T18:45:00+00:00,sr:season:127075,Croatia,Gibraltar,3,0,3.84,0.109
-sr:sport_event:56418817,2025-11-14T19:45:00+00:00,sr:season:127075,Croatia,Faroe Islands,3,1,1.922,1.103
-sr:sport_event:56418819,2025-11-17T19:45:00+00:00,sr:season:127075,Czechia,Gibraltar,6,0,2.88,0.0
-sr:sport_event:56418821,2025-11-17T19:45:00+00:00,sr:season:127075,Montenegro,Croatia,2,3,1.115,1.728
+sr:sport_event:56418319,2025-09-05T18:45:00+00:00,sr:season:127075,Slovenia,Sweden,2,2,1.14,0.811
+sr:sport_event:56418321,2025-09-05T18:45:00+00:00,sr:season:127075,Switzerland,Kosovo,4,0,1.098,0.578
+sr:sport_event:56418323,2025-09-08T18:45:00+00:00,sr:season:127075,Kosovo,Sweden,2,0,1.487,1.036
+sr:sport_event:56418325,2025-09-08T18:45:00+00:00,sr:season:127075,Switzerland,Slovenia,3,0,1.605,0.511
+sr:sport_event:56418329,2025-10-10T18:45:00+00:00,sr:season:127075,Sweden,Switzerland,0,2,0.931,1.214
+sr:sport_event:56418331,2025-10-13T18:45:00+00:00,sr:season:127075,Slovenia,Switzerland,0,0,0.168,0.672
+sr:sport_event:56418333,2025-10-13T18:45:00+00:00,sr:season:127075,Sweden,Kosovo,0,1,2.053,0.812
+sr:sport_event:56418337,2025-11-15T19:45:00+00:00,sr:season:127075,Switzerland,Sweden,4,1,1.161,0.788
+sr:sport_event:56418339,2025-11-18T19:45:00+00:00,sr:season:127075,Kosovo,Switzerland,1,1,0.792,0.662
+sr:sport_event:56418341,2025-11-18T19:45:00+00:00,sr:season:127075,Sweden,Slovenia,1,1,1.154,0.843
+sr:sport_event:56418457,2025-09-04T18:45:00+00:00,sr:season:127075,Slovakia,Germany,2,0,0.638,1.691
+sr:sport_event:56418461,2025-09-07T18:45:00+00:00,sr:season:127075,Germany,Northern Ireland,3,1,1.371,0.303
+sr:sport_event:56418465,2025-10-10T18:45:00+00:00,sr:season:127075,Germany,Luxembourg,4,0,2.538,0.093
+sr:sport_event:56418467,2025-10-13T18:45:00+00:00,sr:season:127075,Northern Ireland,Germany,0,1,0.829,0.781
+sr:sport_event:56418471,2025-11-14T19:45:00+00:00,sr:season:127075,Luxembourg,Germany,0,2,0.654,1.725
+sr:sport_event:56418477,2025-11-17T19:45:00+00:00,sr:season:127075,Germany,Slovakia,6,0,3.113,0.782
+sr:sport_event:56418483,2025-09-05T18:45:00+00:00,sr:season:127075,Denmark,Scotland,0,0,0.924,0.937
+sr:sport_event:56418485,2025-09-08T18:45:00+00:00,sr:season:127075,Belarus,Scotland,0,2,0.452,1.226
+sr:sport_event:56418491,2025-10-09T18:45:00+00:00,sr:season:127075,Scotland,Greece,3,1,0.548,0.649
+sr:sport_event:56418493,2025-10-12T16:00:00+00:00,sr:season:127075,Scotland,Belarus,2,1,1.207,1.665
+sr:sport_event:56418497,2025-11-15T19:45:00+00:00,sr:season:127075,Greece,Scotland,3,2,2.096,1.482
+sr:sport_event:56418503,2025-11-18T19:45:00+00:00,sr:season:127075,Scotland,Denmark,4,2,1.515,1.714
+sr:sport_event:56418507,2025-09-05T18:45:00+00:00,sr:season:127075,Ukraine,France,0,2,0.523,1.635
+sr:sport_event:56418511,2025-09-09T18:45:00+00:00,sr:season:127075,France,Iceland,2,1,1.859,0.741
+sr:sport_event:56418515,2025-10-10T18:45:00+00:00,sr:season:127075,France,Azerbaijan,3,0,1.489,0.145
+sr:sport_event:56418517,2025-10-13T18:45:00+00:00,sr:season:127075,Iceland,France,2,2,0.713,2.336
+sr:sport_event:56418523,2025-11-13T19:45:00+00:00,sr:season:127075,France,Ukraine,4,0,1.841,0.0
+sr:sport_event:56418525,2025-11-16T17:00:00+00:00,sr:season:127075,Azerbaijan,France,1,3,0.763,1.584
+sr:sport_event:56418529,2025-09-04T16:00:00+00:00,sr:season:127075,Georgia,Turkiye,2,3,0.72,0.732
+sr:sport_event:56418531,2025-09-04T18:45:00+00:00,sr:season:127075,Bulgaria,Spain,0,3,0.361,2.451
+sr:sport_event:56418535,2025-09-07T18:45:00+00:00,sr:season:127075,Turkiye,Spain,0,6,0.566,2.368
+sr:sport_event:56418537,2025-10-11T18:45:00+00:00,sr:season:127075,Bulgaria,Turkiye,1,6,0.683,1.495
+sr:sport_event:56418539,2025-10-11T18:45:00+00:00,sr:season:127075,Spain,Georgia,2,0,2.393,0.0
+sr:sport_event:56418541,2025-10-14T18:45:00+00:00,sr:season:127075,Turkiye,Georgia,4,1,1.718,1.061
+sr:sport_event:56418543,2025-10-14T18:45:00+00:00,sr:season:127075,Spain,Bulgaria,4,0,2.402,0.299
+sr:sport_event:56418545,2025-11-15T17:00:00+00:00,sr:season:127075,Georgia,Spain,0,4,0.606,0.95
+sr:sport_event:56418547,2025-11-15T17:00:00+00:00,sr:season:127075,Turkiye,Bulgaria,2,0,1.687,0.564
+sr:sport_event:56418551,2025-11-18T19:45:00+00:00,sr:season:127075,Spain,Turkiye,2,2,2.208,0.893
+sr:sport_event:56418553,2025-09-06T16:00:00+00:00,sr:season:127075,Armenia,Portugal,0,5,0.352,2.95
+sr:sport_event:56418559,2025-09-09T18:45:00+00:00,sr:season:127075,Hungary,Portugal,2,3,0.707,2.074
+sr:sport_event:56418563,2025-10-11T18:45:00+00:00,sr:season:127075,Portugal,Ireland,1,0,3.217,0.199
+sr:sport_event:56418567,2025-10-14T18:45:00+00:00,sr:season:127075,Portugal,Hungary,2,2,1.716,1.562
+sr:sport_event:56418571,2025-11-13T19:45:00+00:00,sr:season:127075,Ireland,Portugal,2,0,0.699,1.636
+sr:sport_event:56418575,2025-11-16T14:00:00+00:00,sr:season:127075,Portugal,Armenia,9,1,3.745,0.354
+sr:sport_event:56418577,2025-03-21T19:45:00+00:00,sr:season:127075,Romania,Bosnia and Herzegovina,0,1,1.226,0.339
+sr:sport_event:56418581,2025-03-24T19:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Cyprus,2,1,1.727,1.246
+sr:sport_event:56418585,2025-06-07T13:00:00+00:00,sr:season:127075,Bosnia and Herzegovina,San Marino,1,0,1.271,0.529
+sr:sport_event:56418587,2025-06-07T18:45:00+00:00,sr:season:127075,Austria,Romania,2,1,1.154,0.803
+sr:sport_event:56418591,2025-06-10T18:45:00+00:00,sr:season:127075,San Marino,Austria,0,4,0.492,1.807
+sr:sport_event:56418593,2025-09-06T18:45:00+00:00,sr:season:127075,Austria,Cyprus,1,0,1.131,1.976
+sr:sport_event:56418595,2025-09-06T18:45:00+00:00,sr:season:127075,San Marino,Bosnia and Herzegovina,0,6,0.175,2.259
+sr:sport_event:56418597,2025-09-09T18:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Austria,1,2,1.414,1.299
+sr:sport_event:56418601,2025-10-09T18:45:00+00:00,sr:season:127075,Austria,San Marino,10,0,3.119,0.543
+sr:sport_event:56418603,2025-10-09T18:45:00+00:00,sr:season:127075,Cyprus,Bosnia and Herzegovina,2,2,0.973,0.975
+sr:sport_event:56418607,2025-10-12T18:45:00+00:00,sr:season:127075,Romania,Austria,1,0,0.824,0.213
+sr:sport_event:56418609,2025-11-15T17:00:00+00:00,sr:season:127075,Cyprus,Austria,0,2,0.205,1.22
+sr:sport_event:56418611,2025-11-15T19:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Romania,3,1,1.042,0.793
+sr:sport_event:56418613,2025-11-18T19:45:00+00:00,sr:season:127075,Austria,Bosnia and Herzegovina,1,1,1.307,0.412
+sr:sport_event:56418617,2025-03-22T17:00:00+00:00,sr:season:127075,Moldova,Norway,0,5,1.533,2.755
+sr:sport_event:56418621,2025-03-25T19:45:00+00:00,sr:season:127075,Israel,Norway,2,4,0.941,1.882
+sr:sport_event:56418627,2025-06-06T18:45:00+00:00,sr:season:127075,Norway,Italy,3,0,0.96,0.633
+sr:sport_event:56418629,2025-06-09T18:45:00+00:00,sr:season:127075,Estonia,Norway,0,1,0.843,2.292
+sr:sport_event:56418639,2025-09-09T18:45:00+00:00,sr:season:127075,Norway,Moldova,11,1,2.861,0.206
+sr:sport_event:56418641,2025-10-11T16:00:00+00:00,sr:season:127075,Norway,Israel,5,0,1.82,0.236
+sr:sport_event:56418649,2025-11-13T17:00:00+00:00,sr:season:127075,Norway,Estonia,4,1,1.799,0.306
+sr:sport_event:56418655,2025-11-16T19:45:00+00:00,sr:season:127075,Italy,Norway,1,4,1.113,1.203
+sr:sport_event:56418665,2025-06-06T18:45:00+00:00,sr:season:127075,North Macedonia,Belgium,1,1,0.723,1.257
+sr:sport_event:56418671,2025-06-09T18:45:00+00:00,sr:season:127075,Belgium,Wales,4,3,0.95,1.035
+sr:sport_event:56418675,2025-09-04T18:45:00+00:00,sr:season:127075,Liechtenstein,Belgium,0,6,0.0,3.602
+sr:sport_event:56418679,2025-09-07T18:45:00+00:00,sr:season:127075,Belgium,Kazakhstan,6,0,3.317,0.289
+sr:sport_event:56418683,2025-10-10T18:45:00+00:00,sr:season:127075,Belgium,North Macedonia,0,0,1.903,0.08
+sr:sport_event:56418687,2025-10-13T18:45:00+00:00,sr:season:127075,Wales,Belgium,2,4,0.869,1.007
+sr:sport_event:56418689,2025-11-15T14:00:00+00:00,sr:season:127075,Kazakhstan,Belgium,1,1,0.303,1.237
+sr:sport_event:56418693,2025-11-18T19:45:00+00:00,sr:season:127075,Belgium,Liechtenstein,7,0,2.912,0.05
+sr:sport_event:56418697,2025-03-21T19:45:00+00:00,sr:season:127075,England,Albania,2,0,0.948,0.176
+sr:sport_event:56418703,2025-03-24T19:45:00+00:00,sr:season:127075,England,Latvia,3,0,2.659,0.173
+sr:sport_event:56418705,2025-06-07T16:00:00+00:00,sr:season:127075,Andorra,England,0,1,0.356,1.654
+sr:sport_event:56418715,2025-09-06T16:00:00+00:00,sr:season:127075,England,Andorra,2,0,1.493,0.126
+sr:sport_event:56418719,2025-09-09T18:45:00+00:00,sr:season:127075,Serbia,England,0,5,0.173,2.054
+sr:sport_event:56418727,2025-10-14T18:45:00+00:00,sr:season:127075,Latvia,England,0,5,0.247,1.629
+sr:sport_event:56418731,2025-11-13T19:45:00+00:00,sr:season:127075,England,Serbia,2,0,1.969,0.894
+sr:sport_event:56418733,2025-11-16T17:00:00+00:00,sr:season:127075,Albania,England,0,2,0.811,2.281
+sr:sport_event:56418747,2025-06-07T18:45:00+00:00,sr:season:127075,Finland,Netherlands,0,2,0.455,1.808
+sr:sport_event:56418751,2025-06-10T18:45:00+00:00,sr:season:127075,Netherlands,Malta,8,0,2.477,0.421
+sr:sport_event:56418755,2025-09-04T18:45:00+00:00,sr:season:127075,Netherlands,Poland,1,1,0.968,0.682
+sr:sport_event:56418757,2025-09-07T16:00:00+00:00,sr:season:127075,Lithuania,Netherlands,2,3,0.427,1.47
+sr:sport_event:56418763,2025-10-09T18:45:00+00:00,sr:season:127075,Malta,Netherlands,0,4,0.29,1.365
+sr:sport_event:56418767,2025-10-12T16:00:00+00:00,sr:season:127075,Netherlands,Finland,4,0,1.657,0.988
+sr:sport_event:56418771,2025-11-14T19:45:00+00:00,sr:season:127075,Poland,Netherlands,1,1,0.881,0.44
+sr:sport_event:56418775,2025-11-17T19:45:00+00:00,sr:season:127075,Netherlands,Lithuania,4,0,1.624,0.427
+sr:sport_event:56418785,2025-03-22T19:45:00+00:00,sr:season:127075,Czechia,Faroe Islands,2,1,1.71,0.334
+sr:sport_event:56418787,2025-03-25T19:45:00+00:00,sr:season:127075,Gibraltar,Czechia,0,4,0.0,2.942
+sr:sport_event:56418791,2025-06-06T18:45:00+00:00,sr:season:127075,Czechia,Montenegro,2,0,1.232,0.409
+sr:sport_event:56418793,2025-06-06T18:45:00+00:00,sr:season:127075,Gibraltar,Croatia,0,7,0.194,2.697
+sr:sport_event:56418797,2025-06-09T18:45:00+00:00,sr:season:127075,Croatia,Czechia,5,1,1.166,0.703
+sr:sport_event:56418799,2025-09-05T18:45:00+00:00,sr:season:127075,Faroe Islands,Croatia,0,1,0.8,2.647
+sr:sport_event:56418801,2025-09-05T18:45:00+00:00,sr:season:127075,Montenegro,Czechia,0,2,1.718,3.334
+sr:sport_event:56418805,2025-09-08T18:45:00+00:00,sr:season:127075,Croatia,Montenegro,4,0,3.592,0.08
+sr:sport_event:56418807,2025-10-09T18:45:00+00:00,sr:season:127075,Czechia,Croatia,0,0,0.974,0.947
+sr:sport_event:56418811,2025-10-12T16:00:00+00:00,sr:season:127075,Faroe Islands,Czechia,2,1,0.504,0.83
+sr:sport_event:56418813,2025-10-12T18:45:00+00:00,sr:season:127075,Croatia,Gibraltar,3,0,3.658,0.102
+sr:sport_event:56418817,2025-11-14T19:45:00+00:00,sr:season:127075,Croatia,Faroe Islands,3,1,1.822,1.056
+sr:sport_event:56418819,2025-11-17T19:45:00+00:00,sr:season:127075,Czechia,Gibraltar,6,0,2.746,0.0
+sr:sport_event:56418821,2025-11-17T19:45:00+00:00,sr:season:127075,Montenegro,Croatia,2,3,1.05,1.636
 sr:sport_event:59148799,2025-03-24T06:00:00+00:00,sr:season:121357,New Caledonia,New Zealand,0,0,0.0,0.0
-sr:sport_event:60376735,2025-06-05T23:00:00+00:00,sr:season:109025,Paraguay,Uruguay,2,0,0.841,0.409
-sr:sport_event:60376737,2025-06-05T23:00:00+00:00,sr:season:109025,Ecuador,Brazil,0,0,0.596,0.4
-sr:sport_event:60376739,2025-06-06T01:00:00+00:00,sr:season:109025,Chile,Argentina,0,1,0.569,1.336
-sr:sport_event:60376741,2025-06-06T20:30:00+00:00,sr:season:109025,Colombia,Peru,0,0,1.052,0.039
-sr:sport_event:60376747,2025-06-10T23:00:00+00:00,sr:season:109025,Uruguay,Venezuela,2,0,1.09,0.531
-sr:sport_event:60376749,2025-06-11T00:00:00+00:00,sr:season:109025,Argentina,Colombia,1,1,0.966,0.837
-sr:sport_event:60376751,2025-06-11T00:45:00+00:00,sr:season:109025,Brazil,Paraguay,1,0,2.139,0.362
-sr:sport_event:60376753,2025-06-11T01:30:00+00:00,sr:season:109025,Peru,Ecuador,0,0,2.632,1.746
-sr:sport_event:61964100,2025-09-04T23:30:00+00:00,sr:season:109025,Argentina,Venezuela,3,0,2.302,0.263
-sr:sport_event:61964102,2025-09-04T23:30:00+00:00,sr:season:109025,Colombia,Bolivia,3,0,1.794,0.548
-sr:sport_event:61964104,2025-09-04T23:30:00+00:00,sr:season:109025,Paraguay,Ecuador,0,0,0.531,0.249
-sr:sport_event:61964218,2025-09-04T23:30:00+00:00,sr:season:109025,Uruguay,Peru,3,0,2.112,1.17
-sr:sport_event:61964220,2025-09-05T00:30:00+00:00,sr:season:109025,Brazil,Chile,3,0,2.317,0.419
-sr:sport_event:61964222,2025-09-09T23:00:00+00:00,sr:season:109025,Ecuador,Argentina,1,0,1.076,0.357
-sr:sport_event:61964224,2025-09-09T23:30:00+00:00,sr:season:109025,Bolivia,Brazil,1,0,1.256,0.371
-sr:sport_event:61964226,2025-09-09T23:30:00+00:00,sr:season:109025,Chile,Uruguay,0,0,1.386,0.572
-sr:sport_event:61964228,2025-09-09T23:30:00+00:00,sr:season:109025,Peru,Paraguay,0,1,1.87,1.138
-sr:sport_event:61964230,2025-09-09T23:30:00+00:00,sr:season:109025,Venezuela,Colombia,3,6,1.064,1.397
+sr:sport_event:60376735,2025-06-05T23:00:00+00:00,sr:season:109025,Paraguay,Uruguay,2,0,0.797,0.388
+sr:sport_event:60376737,2025-06-05T23:00:00+00:00,sr:season:109025,Ecuador,Brazil,0,0,0.562,0.379
+sr:sport_event:60376739,2025-06-06T01:00:00+00:00,sr:season:109025,Chile,Argentina,0,1,0.534,1.281
+sr:sport_event:60376741,2025-06-06T20:30:00+00:00,sr:season:109025,Colombia,Peru,0,0,1.007,0.035
+sr:sport_event:60376747,2025-06-10T23:00:00+00:00,sr:season:109025,Uruguay,Venezuela,2,0,1.035,0.499
+sr:sport_event:60376749,2025-06-11T00:00:00+00:00,sr:season:109025,Argentina,Colombia,1,1,0.921,0.794
+sr:sport_event:60376751,2025-06-11T00:45:00+00:00,sr:season:109025,Brazil,Paraguay,1,0,2.054,0.346
+sr:sport_event:60376753,2025-06-11T01:30:00+00:00,sr:season:109025,Peru,Ecuador,0,0,2.538,1.683
+sr:sport_event:61964100,2025-09-04T23:30:00+00:00,sr:season:109025,Argentina,Venezuela,3,0,2.198,0.249
+sr:sport_event:61964102,2025-09-04T23:30:00+00:00,sr:season:109025,Colombia,Bolivia,3,0,1.709,0.516
+sr:sport_event:61964104,2025-09-04T23:30:00+00:00,sr:season:109025,Paraguay,Ecuador,0,0,0.503,0.236
+sr:sport_event:61964218,2025-09-04T23:30:00+00:00,sr:season:109025,Uruguay,Peru,3,0,2.013,1.102
+sr:sport_event:61964220,2025-09-05T00:30:00+00:00,sr:season:109025,Brazil,Chile,3,0,2.215,0.393
+sr:sport_event:61964222,2025-09-09T23:00:00+00:00,sr:season:109025,Ecuador,Argentina,1,0,1.025,0.342
+sr:sport_event:61964224,2025-09-09T23:30:00+00:00,sr:season:109025,Bolivia,Brazil,1,0,1.179,0.35
+sr:sport_event:61964226,2025-09-09T23:30:00+00:00,sr:season:109025,Chile,Uruguay,0,0,1.315,0.542
+sr:sport_event:61964228,2025-09-09T23:30:00+00:00,sr:season:109025,Peru,Paraguay,0,1,1.791,1.089
+sr:sport_event:61964230,2025-09-09T23:30:00+00:00,sr:season:109025,Venezuela,Colombia,3,6,1.008,1.324
 sr:sport_event:62282194,2025-09-04T21:30:00+00:00,sr:season:115355,Suriname,Panama,0,0,0.0,0.0
 sr:sport_event:62282200,2025-09-09T01:30:00+00:00,sr:season:115355,Panama,Guatemala,1,1,0.0,0.0
 sr:sport_event:62282206,2025-10-11T01:00:00+00:00,sr:season:115355,El Salvador,Panama,0,1,0.0,0.0
@@ -313,65 +337,85 @@ sr:sport_event:62282436,2025-11-14T02:00:00+00:00,sr:season:115355,Haiti,Costa R
 sr:sport_event:62282440,2025-11-19T01:00:00+00:00,sr:season:115355,Haiti,Nicaragua,0,0,0.0,0.0
 sr:sport_event:64772592,2025-11-13T19:00:00+00:00,sr:season:112442,Cameroon,Congo DR,0,1,0.0,0.0
 sr:sport_event:65657152,2025-11-16T19:00:00+00:00,sr:season:112442,Nigeria,Congo DR,1,1,0.0,0.0
-sr:sport_event:65897784,2026-03-26T19:45:00+00:00,sr:season:127075,Wales,Bosnia and Herzegovina,1,1,1.653,1.681
-sr:sport_event:65897790,2026-03-26T19:45:00+00:00,sr:season:127075,Czechia,Ireland,2,2,1.158,0.903
-sr:sport_event:65897794,2026-03-26T19:45:00+00:00,sr:season:127075,Ukraine,Sweden,1,3,1.091,0.798
-sr:sport_event:65897796,2026-03-26T17:00:00+00:00,sr:season:127075,Turkiye,Romania,1,0,1.471,0.622
-sr:sport_event:65899774,2026-03-31T21:00:00+00:00,sr:season:137130,Congo DR,Jamaica,1,0,2.697,0.816
-sr:sport_event:65899776,2026-04-01T03:00:00+00:00,sr:season:137130,Iraq,Bolivia,2,1,0.699,1.203
-sr:sport_event:65901000,2026-03-31T18:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Italy,1,1,2.494,0.995
-sr:sport_event:65901002,2026-03-31T18:45:00+00:00,sr:season:127075,Sweden,Poland,3,2,1.224,1.539
-sr:sport_event:65901008,2026-03-31T18:45:00+00:00,sr:season:127075,Kosovo,Turkiye,0,1,1.591,1.68
-sr:sport_event:65901016,2026-03-31T18:45:00+00:00,sr:season:127075,Czechia,Denmark,2,2,1.049,1.925
-sr:sport_event:66456904,2026-06-11T19:00:00+00:00,sr:season:101177,Mexico,South Africa,2,0,1.916,0.309
-sr:sport_event:66456906,2026-06-12T02:00:00+00:00,sr:season:101177,Korea Republic,Czechia,2,1,2.145,1.287
-sr:sport_event:66456908,2026-06-19T01:00:00+00:00,sr:season:101177,Mexico,Korea Republic,1,0,1.164,1.619
-sr:sport_event:66456910,2026-06-18T16:00:00+00:00,sr:season:101177,Czechia,South Africa,1,1,1.95,1.529
-sr:sport_event:66456916,2026-06-12T19:00:00+00:00,sr:season:101177,Canada,Bosnia and Herzegovina,1,1,2.114,1.589
-sr:sport_event:66456918,2026-06-13T19:00:00+00:00,sr:season:101177,Qatar,Switzerland,1,1,0.779,3.291
-sr:sport_event:66456920,2026-06-18T22:00:00+00:00,sr:season:101177,Canada,Qatar,6,0,5.457,0.231
-sr:sport_event:66456922,2026-06-18T19:00:00+00:00,sr:season:101177,Switzerland,Bosnia and Herzegovina,4,1,1.575,0.461
-sr:sport_event:66456924,2026-06-24T19:00:00+00:00,sr:season:101177,Switzerland,Canada,2,1,0.755,2.146
-sr:sport_event:66456926,2026-06-24T19:00:00+00:00,sr:season:101177,Bosnia and Herzegovina,Qatar,3,1,1.785,1.488
-sr:sport_event:66456928,2026-06-13T22:00:00+00:00,sr:season:101177,Brazil,Morocco,1,1,1.038,1.553
-sr:sport_event:66456930,2026-06-14T01:00:00+00:00,sr:season:101177,Haiti,Scotland,0,1,1.566,1.295
-sr:sport_event:66456932,2026-06-20T00:30:00+00:00,sr:season:101177,Brazil,Haiti,3,0,1.358,0.954
-sr:sport_event:66456934,2026-06-19T22:00:00+00:00,sr:season:101177,Scotland,Morocco,0,1,0.935,1.196
-sr:sport_event:66456936,2026-06-24T22:00:00+00:00,sr:season:101177,Scotland,Brazil,0,3,1.883,3.389
-sr:sport_event:66456938,2026-06-24T22:00:00+00:00,sr:season:101177,Morocco,Haiti,4,2,3.299,0.642
-sr:sport_event:66456940,2026-06-13T01:00:00+00:00,sr:season:101177,USA,Paraguay,4,1,2.934,0.838
-sr:sport_event:66456942,2026-06-14T04:00:00+00:00,sr:season:101177,Australia,Turkiye,2,0,0.92,3.11
-sr:sport_event:66456944,2026-06-19T19:00:00+00:00,sr:season:101177,USA,Australia,2,0,1.696,0.566
-sr:sport_event:66456946,2026-06-20T03:00:00+00:00,sr:season:101177,Turkiye,Paraguay,0,1,4.001,0.615
-sr:sport_event:66456968,2026-06-14T20:00:00+00:00,sr:season:101177,Netherlands,Japan,2,2,1.947,1.002
-sr:sport_event:66456970,2026-06-15T02:00:00+00:00,sr:season:101177,Sweden,Tunisia,5,1,1.956,0.498
-sr:sport_event:66456972,2026-06-20T17:00:00+00:00,sr:season:101177,Netherlands,Sweden,5,1,2.155,2.466
-sr:sport_event:66456974,2026-06-21T04:00:00+00:00,sr:season:101177,Tunisia,Japan,0,4,0.338,1.807
-sr:sport_event:66456982,2026-06-15T19:00:00+00:00,sr:season:101177,Belgium,Egypt,1,1,2.16,1.793
-sr:sport_event:66456984,2026-06-16T01:00:00+00:00,sr:season:101177,IR Iran,New Zealand,2,2,2.409,1.795
-sr:sport_event:66456986,2026-06-21T19:00:00+00:00,sr:season:101177,Belgium,IR Iran,0,0,2.855,0.946
-sr:sport_event:66456988,2026-06-22T01:00:00+00:00,sr:season:101177,New Zealand,Egypt,1,3,1.513,2.911
-sr:sport_event:66456994,2026-06-15T16:00:00+00:00,sr:season:101177,Spain,Cape Verde,0,0,3.517,0.629
-sr:sport_event:66456996,2026-06-15T22:00:00+00:00,sr:season:101177,Saudi Arabia,Uruguay,1,1,1.557,4.258
-sr:sport_event:66456998,2026-06-21T16:00:00+00:00,sr:season:101177,Spain,Saudi Arabia,4,0,2.515,0.223
-sr:sport_event:66457000,2026-06-21T22:00:00+00:00,sr:season:101177,Uruguay,Cape Verde,2,2,2.694,0.849
-sr:sport_event:66457006,2026-06-16T19:00:00+00:00,sr:season:101177,France,Senegal,3,1,1.4,0.879
-sr:sport_event:66457008,2026-06-16T22:00:00+00:00,sr:season:101177,Iraq,Norway,1,4,1.923,2.647
-sr:sport_event:66457010,2026-06-22T21:00:00+00:00,sr:season:101177,France,Iraq,3,0,2.579,0.698
-sr:sport_event:66457012,2026-06-23T00:00:00+00:00,sr:season:101177,Norway,Senegal,3,2,2.118,3.13
-sr:sport_event:66457018,2026-06-17T01:00:00+00:00,sr:season:101177,Argentina,Algeria,3,0,1.151,0.627
-sr:sport_event:66457020,2026-06-17T04:00:00+00:00,sr:season:101177,Austria,Jordan,3,1,0.826,1.267
-sr:sport_event:66457022,2026-06-22T17:00:00+00:00,sr:season:101177,Argentina,Austria,2,0,2.018,0.96
-sr:sport_event:66457024,2026-06-23T03:00:00+00:00,sr:season:101177,Jordan,Algeria,1,2,0.872,2.58
-sr:sport_event:66457030,2026-06-17T17:00:00+00:00,sr:season:101177,Portugal,Congo DR,1,1,1.132,1.013
-sr:sport_event:66457032,2026-06-18T02:00:00+00:00,sr:season:101177,Uzbekistan,Colombia,1,3,1.361,1.961
-sr:sport_event:66457034,2026-06-23T17:00:00+00:00,sr:season:101177,Portugal,Uzbekistan,5,0,2.303,0.765
-sr:sport_event:66457036,2026-06-24T02:00:00+00:00,sr:season:101177,Colombia,Congo DR,1,0,2.234,0.988
-sr:sport_event:66457042,2026-06-17T20:00:00+00:00,sr:season:101177,England,Croatia,4,2,3.273,1.394
-sr:sport_event:66457044,2026-06-17T23:00:00+00:00,sr:season:101177,Ghana,Panama,1,0,1.367,1.365
-sr:sport_event:66457046,2026-06-23T20:00:00+00:00,sr:season:101177,England,Ghana,0,0,2.778,0.283
-sr:sport_event:66457048,2026-06-23T23:00:00+00:00,sr:season:101177,Panama,Croatia,0,1,1.116,0.751
-sr:sport_event:66457070,2026-06-14T17:00:00+00:00,sr:season:101177,Germany,Curacao,7,1,3.775,0.866
-sr:sport_event:66457072,2026-06-14T23:00:00+00:00,sr:season:101177,Ivory Coast,Ecuador,1,0,2.209,1.118
-sr:sport_event:66457074,2026-06-20T20:00:00+00:00,sr:season:101177,Germany,Ivory Coast,2,1,2.352,1.158
-sr:sport_event:66457076,2026-06-21T00:00:00+00:00,sr:season:101177,Ecuador,Curacao,0,0,5.194,1.075
+sr:sport_event:65897784,2026-03-26T19:45:00+00:00,sr:season:127075,Wales,Bosnia and Herzegovina,1,1,1.563,1.604
+sr:sport_event:65897790,2026-03-26T19:45:00+00:00,sr:season:127075,Czechia,Ireland,2,2,1.101,0.854
+sr:sport_event:65897794,2026-03-26T19:45:00+00:00,sr:season:127075,Ukraine,Sweden,1,3,1.048,0.763
+sr:sport_event:65897796,2026-03-26T17:00:00+00:00,sr:season:127075,Turkiye,Romania,1,0,1.398,0.595
+sr:sport_event:65899774,2026-03-31T21:00:00+00:00,sr:season:137130,Congo DR,Jamaica,1,0,2.579,0.775
+sr:sport_event:65899776,2026-04-01T03:00:00+00:00,sr:season:137130,Iraq,Bolivia,2,1,0.664,1.143
+sr:sport_event:65901000,2026-03-31T18:45:00+00:00,sr:season:127075,Bosnia and Herzegovina,Italy,1,1,2.374,0.94
+sr:sport_event:65901002,2026-03-31T18:45:00+00:00,sr:season:127075,Sweden,Poland,3,2,1.173,1.47
+sr:sport_event:65901008,2026-03-31T18:45:00+00:00,sr:season:127075,Kosovo,Turkiye,0,1,1.538,1.633
+sr:sport_event:65901016,2026-03-31T18:45:00+00:00,sr:season:127075,Czechia,Denmark,2,2,0.997,1.826
+sr:sport_event:66456904,2026-06-11T19:00:00+00:00,sr:season:101177,Mexico,South Africa,2,0,1.808,0.289
+sr:sport_event:66456906,2026-06-12T02:00:00+00:00,sr:season:101177,Korea Republic,Czechia,2,1,2.038,1.229
+sr:sport_event:66456908,2026-06-19T01:00:00+00:00,sr:season:101177,Mexico,Korea Republic,1,0,1.108,1.564
+sr:sport_event:66456910,2026-06-18T16:00:00+00:00,sr:season:101177,Czechia,South Africa,1,1,1.86,1.429
+sr:sport_event:66456912,2026-06-25T01:00:00+00:00,sr:season:101177,Czechia,Mexico,0,3,1.053,1.856
+sr:sport_event:66456914,2026-06-25T01:00:00+00:00,sr:season:101177,South Africa,Korea Republic,1,0,1.664,1.044
+sr:sport_event:66456916,2026-06-12T19:00:00+00:00,sr:season:101177,Canada,Bosnia and Herzegovina,1,1,2.018,1.527
+sr:sport_event:66456918,2026-06-13T19:00:00+00:00,sr:season:101177,Qatar,Switzerland,1,1,0.743,3.12
+sr:sport_event:66456920,2026-06-18T22:00:00+00:00,sr:season:101177,Canada,Qatar,6,0,5.241,0.218
+sr:sport_event:66456922,2026-06-18T19:00:00+00:00,sr:season:101177,Switzerland,Bosnia and Herzegovina,4,1,1.493,0.433
+sr:sport_event:66456924,2026-06-24T19:00:00+00:00,sr:season:101177,Switzerland,Canada,2,1,0.714,2.051
+sr:sport_event:66456926,2026-06-24T19:00:00+00:00,sr:season:101177,Bosnia and Herzegovina,Qatar,3,1,1.684,1.425
+sr:sport_event:66456928,2026-06-13T22:00:00+00:00,sr:season:101177,Brazil,Morocco,1,1,0.985,1.466
+sr:sport_event:66456930,2026-06-14T01:00:00+00:00,sr:season:101177,Haiti,Scotland,0,1,1.478,1.237
+sr:sport_event:66456932,2026-06-20T00:30:00+00:00,sr:season:101177,Brazil,Haiti,3,0,1.296,0.903
+sr:sport_event:66456934,2026-06-19T22:00:00+00:00,sr:season:101177,Scotland,Morocco,0,1,0.893,1.127
+sr:sport_event:66456936,2026-06-24T22:00:00+00:00,sr:season:101177,Scotland,Brazil,0,3,1.802,3.244
+sr:sport_event:66456938,2026-06-24T22:00:00+00:00,sr:season:101177,Morocco,Haiti,4,2,3.166,0.6
+sr:sport_event:66456940,2026-06-13T01:00:00+00:00,sr:season:101177,USA,Paraguay,4,1,2.805,0.79
+sr:sport_event:66456942,2026-06-14T04:00:00+00:00,sr:season:101177,Australia,Turkiye,2,0,0.867,2.926
+sr:sport_event:66456944,2026-06-19T19:00:00+00:00,sr:season:101177,USA,Australia,2,0,1.636,0.532
+sr:sport_event:66456946,2026-06-20T03:00:00+00:00,sr:season:101177,Turkiye,Paraguay,0,1,3.782,0.576
+sr:sport_event:66456948,2026-06-26T02:00:00+00:00,sr:season:101177,Turkiye,USA,3,2,1.774,2.817
+sr:sport_event:66456950,2026-06-26T02:00:00+00:00,sr:season:101177,Paraguay,Australia,0,0,0.617,1.217
+sr:sport_event:66456968,2026-06-14T20:00:00+00:00,sr:season:101177,Netherlands,Japan,2,2,1.867,0.948
+sr:sport_event:66456970,2026-06-15T02:00:00+00:00,sr:season:101177,Sweden,Tunisia,5,1,1.863,0.466
+sr:sport_event:66456972,2026-06-20T17:00:00+00:00,sr:season:101177,Netherlands,Sweden,5,1,2.07,2.332
+sr:sport_event:66456974,2026-06-21T04:00:00+00:00,sr:season:101177,Tunisia,Japan,0,4,0.319,1.735
+sr:sport_event:66456976,2026-06-25T23:00:00+00:00,sr:season:101177,Tunisia,Netherlands,1,3,1.321,2.567
+sr:sport_event:66456978,2026-06-25T23:00:00+00:00,sr:season:101177,Japan,Sweden,1,1,0.916,1.224
+sr:sport_event:66456982,2026-06-15T19:00:00+00:00,sr:season:101177,Belgium,Egypt,1,1,2.05,1.7
+sr:sport_event:66456984,2026-06-16T01:00:00+00:00,sr:season:101177,IR Iran,New Zealand,2,2,2.29,1.706
+sr:sport_event:66456986,2026-06-21T19:00:00+00:00,sr:season:101177,Belgium,IR Iran,0,0,2.71,0.899
+sr:sport_event:66456988,2026-06-22T01:00:00+00:00,sr:season:101177,New Zealand,Egypt,1,3,1.443,2.773
+sr:sport_event:66456990,2026-06-27T03:00:00+00:00,sr:season:101177,New Zealand,Belgium,1,5,0.675,4.57
+sr:sport_event:66456992,2026-06-27T03:00:00+00:00,sr:season:101177,Egypt,IR Iran,1,1,1.547,1.657
+sr:sport_event:66456994,2026-06-15T16:00:00+00:00,sr:season:101177,Spain,Cape Verde,0,0,3.353,0.591
+sr:sport_event:66456996,2026-06-15T22:00:00+00:00,sr:season:101177,Saudi Arabia,Uruguay,1,1,1.511,4.064
+sr:sport_event:66456998,2026-06-21T16:00:00+00:00,sr:season:101177,Spain,Saudi Arabia,4,0,2.379,0.205
+sr:sport_event:66457000,2026-06-21T22:00:00+00:00,sr:season:101177,Uruguay,Cape Verde,2,2,2.582,0.784
+sr:sport_event:66457002,2026-06-27T00:00:00+00:00,sr:season:101177,Uruguay,Spain,0,1,0.443,0.51
+sr:sport_event:66457004,2026-06-27T00:00:00+00:00,sr:season:101177,Cape Verde,Saudi Arabia,0,0,1.958,0.7
+sr:sport_event:66457006,2026-06-16T19:00:00+00:00,sr:season:101177,France,Senegal,3,1,1.325,0.836
+sr:sport_event:66457008,2026-06-16T22:00:00+00:00,sr:season:101177,Iraq,Norway,1,4,1.84,2.552
+sr:sport_event:66457010,2026-06-22T21:00:00+00:00,sr:season:101177,France,Iraq,3,0,2.448,0.668
+sr:sport_event:66457012,2026-06-23T00:00:00+00:00,sr:season:101177,Norway,Senegal,3,2,2.029,3.002
+sr:sport_event:66457014,2026-06-26T19:00:00+00:00,sr:season:101177,Norway,France,1,4,1.191,2.095
+sr:sport_event:66457016,2026-06-26T19:00:00+00:00,sr:season:101177,Senegal,Iraq,5,0,4.739,0.481
+sr:sport_event:66457018,2026-06-17T01:00:00+00:00,sr:season:101177,Argentina,Algeria,3,0,1.088,0.587
+sr:sport_event:66457020,2026-06-17T04:00:00+00:00,sr:season:101177,Austria,Jordan,3,1,0.775,1.196
+sr:sport_event:66457022,2026-06-22T17:00:00+00:00,sr:season:101177,Argentina,Austria,2,0,1.932,0.917
+sr:sport_event:66457024,2026-06-23T03:00:00+00:00,sr:season:101177,Jordan,Algeria,1,2,0.821,2.46
+sr:sport_event:66457026,2026-06-28T02:00:00+00:00,sr:season:101177,Jordan,Argentina,1,3,0.706,2.165
+sr:sport_event:66457028,2026-06-28T02:00:00+00:00,sr:season:101177,Algeria,Austria,3,3,1.301,1.819
+sr:sport_event:66457030,2026-06-17T17:00:00+00:00,sr:season:101177,Portugal,Congo DR,1,1,1.072,0.959
+sr:sport_event:66457032,2026-06-18T02:00:00+00:00,sr:season:101177,Uzbekistan,Colombia,1,3,1.313,1.859
+sr:sport_event:66457034,2026-06-23T17:00:00+00:00,sr:season:101177,Portugal,Uzbekistan,5,0,2.188,0.719
+sr:sport_event:66457036,2026-06-24T02:00:00+00:00,sr:season:101177,Colombia,Congo DR,1,0,2.106,0.938
+sr:sport_event:66457038,2026-06-27T23:30:00+00:00,sr:season:101177,Colombia,Portugal,0,0,2.943,1.571
+sr:sport_event:66457040,2026-06-27T23:30:00+00:00,sr:season:101177,Congo DR,Uzbekistan,3,1,2.231,0.31
+sr:sport_event:66457042,2026-06-17T20:00:00+00:00,sr:season:101177,England,Croatia,4,2,3.144,1.32
+sr:sport_event:66457044,2026-06-17T23:00:00+00:00,sr:season:101177,Ghana,Panama,1,0,1.308,1.29
+sr:sport_event:66457046,2026-06-23T20:00:00+00:00,sr:season:101177,England,Ghana,0,0,2.645,0.27
+sr:sport_event:66457048,2026-06-23T23:00:00+00:00,sr:season:101177,Panama,Croatia,0,1,1.063,0.713
+sr:sport_event:66457050,2026-06-27T21:00:00+00:00,sr:season:101177,Panama,England,0,2,1.036,2.559
+sr:sport_event:66457052,2026-06-27T21:00:00+00:00,sr:season:101177,Croatia,Ghana,2,1,1.014,0.635
+sr:sport_event:66457070,2026-06-14T17:00:00+00:00,sr:season:101177,Germany,Curacao,7,1,3.596,0.819
+sr:sport_event:66457072,2026-06-14T23:00:00+00:00,sr:season:101177,Ivory Coast,Ecuador,1,0,2.096,1.054
+sr:sport_event:66457074,2026-06-20T20:00:00+00:00,sr:season:101177,Germany,Ivory Coast,2,1,2.234,1.098
+sr:sport_event:66457076,2026-06-21T00:00:00+00:00,sr:season:101177,Ecuador,Curacao,0,0,5.002,1.01
+sr:sport_event:66457078,2026-06-25T20:00:00+00:00,sr:season:101177,Ecuador,Germany,2,1,1.352,1.302
+sr:sport_event:66457080,2026-06-25T20:00:00+00:00,sr:season:101177,Curacao,Ivory Coast,0,2,1.066,1.092
