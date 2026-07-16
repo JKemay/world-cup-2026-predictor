@@ -106,8 +106,8 @@ def main() -> None:
             "- **Ratings** via regularized Poisson regression on xG, not raw goals\n"
             "- **FIFA rank** as a Bayesian-style prior, stabilizing thin samples\n"
             "- **Elo rating** (goal-based) ensembled with the xG model for W/D/L\n"
-            "- **Backtest:** ensemble is +36.7% RPS vs naive (P=1.000); "
-            "out-of-sample on the real 2026 knockout stage: 79% top-1 (19/24), +45.1% RPS vs naive"
+            "- **Backtest:** ensemble is +34.7% RPS vs naive (P=1.000); "
+            "out-of-sample on the real 2026 knockout stage: 79% top-1 (19/24), +45.7% RPS vs naive"
         )
         st.markdown("---")
         st.markdown(
@@ -275,24 +275,25 @@ def main() -> None:
         st.markdown("### How good is the model?")
         st.markdown(
             """
-**Leave-one-out backtest** on all 96 WC 2026 matches + 324 qualifiers (ensemble = xG/Dixon-Coles + Elo, 50/50):
+**Leave-one-out backtest** on all 96 WC 2026 matches + 452 qualifiers, all 6 confederations
+including AFC (ensemble = xG/Dixon-Coles + Elo, 50/50):
 
 | Metric | Value |
 |---|---|
-| Ensemble RPS | **0.1415** |
-| Ensemble log-loss | **0.7962** |
-| Top-1 accuracy | **67%** |
+| Ensemble RPS | **0.1460** |
+| Ensemble log-loss | **0.8134** |
+| Top-1 accuracy | **66%** |
 
 **Bootstrap confidence intervals** (10 000 resamples):
 
-- Ensemble vs Naive baseline: strongly significant improvement (P = 1.000, +36.7% RPS)
-- Ensemble vs Full xG model: ΔRPS = −0.0150, 95% CI [−0.0227, −0.0071], P = 1.000
-- Ensemble vs FIFA-only (via Full model): suggestive but not conclusive, P = 0.961
+- Ensemble vs Naive baseline: strongly significant improvement (P = 1.000, +34.7% RPS)
+- Ensemble vs Full xG model: ΔRPS = −0.0123, 95% CI [−0.0194, −0.0053], P = 1.000
+- Ensemble vs FIFA-only (via Full model): suggestive but not conclusive, P = 0.591
 
 The ensemble is a statistically significant improvement over both the naive baseline and the
 full xG model. On the fuller, knockout-inclusive dataset, plain Elo alone now has a lower point-
 estimate RPS than the 50/50 blend — but a leakage-free (nested) re-tune of the blend weight
-did **not** clear 95% significance (P = 0.948), so the ensemble ships at 50/50, unchanged.
+did **not** clear 95% significance (P = 0.931), so the ensemble ships at 50/50, unchanged.
 
 **Out-of-sample validation** — the real 2026 World Cup knockout stage: predicting all 24
 Round-of-32-through-Round-of-16 matches with a model trained only on data available *before*
@@ -301,7 +302,7 @@ each match (strict chronological cutoff, no leave-one-out shortcuts):
 | Metric | Value |
 |---|---|
 | Top-1 accuracy | **79% (19/24)** |
-| RPS improvement vs naive | **+45.1%** |
+| RPS improvement vs naive | **+45.7%** |
 
 4 of the 5 misses were 90-minute draws that went to penalty shootouts, so most of what reads
 as "error" is really the model having no representation of the shootout branch at all — not a

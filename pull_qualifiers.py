@@ -27,7 +27,17 @@ DRY_RUN = "--dry-run" in sys.argv
 
 def _is_qualifier(name: str) -> bool:
     n = name.lower()
-    return "qualif" in n and "world cup" in n and "women" not in n
+    if "women" in n or "qualif" not in n:
+        return False
+    if "world cup" in n:
+        return True
+    # AFC brands its WC qualifying competition without the literal "World Cup"
+    # phrase ("AFC Asian Qualifiers 2026", sr:competition:308) — every other
+    # confederation (UEFA/CAF/CONCACAF/CONMEBOL/OFC) says "FIFA World Cup
+    # Qualification, <CONFED>", so this is a targeted allowlist, not a
+    # loosened match — it must not also catch "AFC Asian Cup, Qualification"
+    # (a different tournament) or similarly-named non-WC qualifiers.
+    return "afc asian qualifiers" in n
 
 
 def _is_finished(entry: dict) -> bool:

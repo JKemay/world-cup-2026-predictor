@@ -15,33 +15,36 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
 ## Current state (✅ done)
 
 - Cached Sportradar client; 96 World Cup 2026 matches (group stage through the
-  Round of 16, pulled as each round completed) + 324 qualifier matches.
-- xG model (logistic, distance + angle) trained on 2,633 shots, perfectly calibrated.
+  Round of 16, pulled as each round completed) + 452 qualifier matches
+  (includes AFC — see "DONE — AFC qualifiers pulled" below).
+- xG model (logistic, distance + angle) trained on shot data from all 548
+  matches, perfectly calibrated.
 - Dixon-Coles ratings with FIFA prior — ratings pass the smell test
   (Spain #1, Argentina #2; weakest: Gibraltar, Curaçao).
-- Honest LOO backtest (RPS, log-loss), re-run on the 96-match dataset.
-  **Headline finding:** the event-data model went from −3.0% RPS vs a FIFA-only
-  baseline on WC-only data (~2 games/team) to a real edge once qualifier data
-  (~10 games/team) was added.
+- Honest LOO backtest (RPS, log-loss), re-run on the 96-match WC eval set
+  (trained on all 548). **Headline finding:** the event-data model went from
+  −3.0% RPS vs a FIFA-only baseline on WC-only data (~2 games/team) to a real
+  edge once qualifier data (~10 games/team) was added.
 - Streamlit dashboard (`app/streamlit_app.py`), **deployed**: https://world-cup-2026-ml.streamlit.app
 - **Elo benchmark** (`footy/ratings/elo.py`, `build_elo.py`) — World-Football-style
-  Elo, leakage-free on the WC eval set. **Key finding:** Elo (RPS 0.1354) *edges* the
-  Full xG model (0.1565) and, on the 96-match dataset, also edges the 50/50
-  ensemble (0.1415) — see the blend-weight finding below.
+  Elo, leakage-free on the WC eval set. **Key finding:** Elo (RPS 0.1408) *edges* the
+  Full xG model (0.1583) and the 50/50 ensemble (0.1460) — see the blend-weight
+  finding below (still not significant enough to change the shipped default).
 - **Ensemble = SHIPPED predictor** (`footy/ratings/ensemble.py`, `EnsemblePredictor`)
-  — 50/50 blend of the xG/Dixon-Coles W/D/L and the Elo W/D/L. **RPS 0.1415, log-loss
-  0.7962**; significantly beats the Full model (ΔRPS −0.0150, 95% CI [−0.0227, −0.0071],
-  P=1.000) and naive (P=1.000, +36.7% RPS). `build_eval.py`, `build_ratings.py`, and
+  — 50/50 blend of the xG/Dixon-Coles W/D/L and the Elo W/D/L. **RPS 0.1460, log-loss
+  0.8134**; significantly beats the Full model (ΔRPS −0.0123, 95% CI [−0.0194, −0.0053],
+  P=1.000) and naive (P=1.000, +34.7% RPS). `build_eval.py`, `build_ratings.py`, and
   the dashboard all use it. The **scoreline grid stays Dixon-Coles** (Elo has no grid);
   only the W/D/L blends. To get pure xG behaviour, use `DixonColesRatings` directly
   instead of `EnsemblePredictor`.
 - **Blend-weight re-tune — explored, not shipped** (`footy/evaluate/backtest.py`:
   `fit_blend_weight`, `nested_blend_predictions`). The 50/50 weight was chosen on the
-  original 52-match dataset; on the fuller 96-match one, Elo alone has a better point
-  estimate than the ensemble, and an in-sample weight search lands at `w*=0.0` (pure
-  Elo). A leakage-free nested-LOO re-estimate confirms the point-estimate gain (RPS
-  0.1354 vs 0.1415) but does **not** clear 95% significance: P(tuned better)=0.948,
-  95% CI [−0.0133, +0.0014] (straddles zero). **Decision: kept the 0.5 default.** This
+  original 52-match dataset; on the fuller dataset (now 548 matches incl. AFC), Elo
+  alone still has a better point estimate than the ensemble, and an in-sample weight
+  search lands at `w*=0.0` (pure Elo). A leakage-free nested-LOO re-estimate confirms
+  the point-estimate gain (RPS 0.1408 vs 0.1460) but does **not** clear 95%
+  significance: P(tuned better)=0.931, 95% CI [−0.0119, +0.0017] (straddles zero,
+  narrower gap than pre-AFC's P=0.948). **Decision: kept the 0.5 default.** This
   is a "suggestive, not proven" result, not a rejection — revisit once more tournament
   data accumulates. `build_eval.py`'s previous 3-way (DC/Elo/OL) simplex search was
   **leaky** (tuned and scored on the same LOO set) and has been replaced by this
@@ -50,7 +53,7 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   (`backtest_temporal.py`, `footy.evaluate.backtest.temporal_backtest`). Strict
   chronological backtest: each of the 24 R32+R16 knockout matches predicted using a
   model trained only on data available before that match — no LOO shortcuts. **79%
-  top-1 (19/24), RPS 0.1316, +45.1% vs naive.** 4 of the 5 misses were 90-minute draws
+  top-1 (19/24), RPS 0.1297, +45.7% vs naive.** 4 of the 5 misses were 90-minute draws
   that went to penalty shootouts (the model's favorite won 2 of those 4 shootouts,
   in line with a well-calibrated near-coin-flip shootout model) — see the shootout
   layer below. See `docs/METHODOLOGY.md` §7a for full writeup.
@@ -91,11 +94,18 @@ end-to-end, then generalize — the same incremental path this project took.
 
 ## Open items / next steps
 
-- **Pull AFC (Asian) qualifiers** — they aren't under the same Sportradar
-  "FIFA World Cup Qualification" competition tree, so Japan / South Korea / Iran
-  currently lean on the FIFA prior. Extend `pull_qualifiers.py` discovery. More
-  relevant now than when first flagged, since these teams actually played the
-  tournament.
+- ✅ **DONE — AFC qualifiers pulled.** Root cause: Sportradar names the AFC
+  competition `AFC Asian Qualifiers 2026` (`sr:competition:308`) without the
+  literal "World Cup" substring every other confederation uses ("FIFA World Cup
+  Qualification, UEFA/CAF/CONCACAF/CONMEBOL/OFC"), so `pull_qualifiers.py`'s
+  name filter silently skipped it. Fixed with a targeted allowlist (not a
+  loosened match — verified it doesn't also sweep in "AFC Asian Cup,
+  Qualification", a different tournament). Pulled 452 total qualifier matches
+  (was 324); Japan/Korea Republic/IR Iran/Saudi Arabia/Iraq/etc. now have
+  19–24 matches each of real shot data instead of leaning entirely on the FIFA
+  prior. Re-running the full pipeline afterward shows a small, consistent
+  improvement: out-of-sample knockout RPS 0.1316→0.1297, log-loss
+  0.7148→0.7040, still 79% top-1 (19/24), +45.7% vs naive (was +45.1%).
 - **Market-odds benchmark (in progress)** — OddsPapi has a free tier with historical
   pre-match 1X2 odds covering internationals (needs a free self-serve `ODDSPAPI_API_KEY`
   in `.env`). Plan: match our fixtures to OddsPapi by team+date, convert to no-vig
@@ -175,7 +185,7 @@ Run in order — each step is idempotent and caches every API response:
 
 ```bash
 python3 pull_worldcup.py     # WC match timelines (grows each round)  -> data/raw/
-python3 pull_qualifiers.py   # ~324 qualifier timelines (~10 min, rate-limited)
+python3 pull_qualifiers.py   # ~452 qualifier timelines (incl. AFC) (~10 min, rate-limited)
 python3 build_xg.py          # train xG -> data/processed/shots_xg.csv, xg_pitch.png
 python3 build_ratings.py     # fit ratings -> team_ratings.csv, france_iraq_grid.png
 python3 build_eval.py        # LOO backtest -> backtest.csv, calibration.png

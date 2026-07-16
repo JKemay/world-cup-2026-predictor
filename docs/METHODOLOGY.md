@@ -12,7 +12,7 @@ The reference model uses fixed magic constants (`BASE_GOALS`, `SCALING_CONSTANT`
 
 **Source:** Sportradar Soccer Extended (trial tier). Every API response is cached under `data/` so re-runs are free.
 
-**Coverage:** 96 completed World Cup 2026 matches (group stage through the Final) and ~324 qualifying matches (~10 games per team at tournament time). Qualifier data roughly quintuples per-team sample size, which turns out to be the decisive factor.
+**Coverage:** 96 completed World Cup 2026 matches (group stage through the Final) and 452 qualifying matches across all 6 confederations (~10 games per team at tournament time), including AFC — initially missed because Sportradar names that competition "AFC Asian Qualifiers 2026" rather than the "FIFA World Cup Qualification, &lt;confederation&gt;" pattern every other confederation uses; fixed 2026-07-16. Qualifier data roughly quintuples per-team sample size, which turns out to be the decisive factor.
 
 **Data-quality fixes applied:**
 
@@ -151,23 +151,23 @@ weight has seen its own answer. See §7 for the result.
 
 | Model | log-loss | RPS | top-1 |
 |---|---|---|---|
-| **Ensemble (xG + Elo) — shipped** | 0.7962 | 0.1415 | 67% |
-| Ensemble + draw calibration | **0.8133** | 0.1387 | 68% |
-| Elo benchmark | 0.7770 | **0.1354** | 64% |
-| Full (xG + FIFA + form) | 0.8493 | 0.1565 | 68% |
-| FIFA-only | 0.8638 | 0.1614 | 66% |
+| **Ensemble (xG + Elo) — shipped** | 0.8134 | 0.1460 | 66% |
+| Ensemble + draw calibration | 0.8299 | 0.1438 | 67% |
+| Elo benchmark | 0.8027 | **0.1408** | 69% |
+| Full (xG + FIFA + form) | 0.8554 | 0.1583 | 67% |
+| FIFA-only | 0.8556 | 0.1589 | 66% |
 | Naive base-rate | 1.0529 | 0.2235 | 48% |
 
-**The key finding, stated plainly:** on WC-only data (~2 games per team) the event-data model was **worse** than a plain FIFA-rank baseline by 3.0% RPS — it was fitting noise. Adding qualifier data (~10 games per team) **flipped the sign**, and folding in the full 96-match tournament (including all knockout games) confirms the pattern holds at scale.
+**The key finding, stated plainly:** on WC-only data (~2 games per team) the event-data model was **worse** than a plain FIFA-rank baseline by 3.0% RPS — it was fitting noise. Adding qualifier data (~10 games per team, and since 2026-07-16 covering all 6 confederations including AFC) **flipped the sign**, and folding in the full 548-match dataset confirms the pattern holds at scale.
 
-This is a clean demonstration of a thin-data failure: the failure was **predicted** (small sample → high variance), **measured** (the WC-only ablation), **fixed** (qualifier data pull), and **re-measured** (the full-corpus LOO, now on 96 matches).
+This is a clean demonstration of a thin-data failure: the failure was **predicted** (small sample → high variance), **measured** (the WC-only ablation), **fixed** (qualifier data pull), and **re-measured** (the full-corpus LOO).
 
-**Bootstrap significance (10 000 resamples, paired, 95% CI), 96-match dataset:**
+**Bootstrap significance (10 000 resamples, paired, 95% CI), 548-match dataset:**
 
-- **Ensemble vs Naive:** ΔRPS = −0.0820, 95% CI [−0.1096, −0.0554], P(Ensemble better) = **1.000**. The ensemble is **statistically significantly** better than naive base-rates (+36.7% RPS, +24.4% log-loss).
-- **Full vs FIFA-only:** ΔRPS = −0.0049, 95% CI [−0.0103, +0.0005], P(Full better) = 0.961. The interval nearly excludes zero but doesn't quite — the event-data edge over the FIFA prior alone is **suggestive but not conclusive** at 95% confidence, even with the larger dataset.
-- **Ensemble vs Full:** ΔRPS = −0.0150, 95% CI [−0.0227, −0.0071], P(Ensemble better) = **1.000** — entirely negative interval, a robust improvement. A 50/50 average of the xG/Dixon-Coles W/D/L and the Elo W/D/L beats either model alone because the two are **orthogonal**: the xG model scores possession/shot quality, Elo scores goal-based dynamic form using every match. This is the **shipped predictor** (`footy/ratings/ensemble.py`); the scoreline grid is still taken from the xG model (Elo has no grid), while the headline W/D/L blends both.
-- **Elo vs Ensemble, knockout-heavy data — investigated, weight retained at 0.5:** on the 96-match dataset, plain Elo (RPS 0.1354) has a *lower* point estimate than the 50/50 ensemble (0.1415) — a reversal from the 52-match result, where the ensemble led outright. Refitting the blend weight with the leakage-free nested-LOO protocol (see §6) lands at `w*=0.0` (pure Elo) on every fold, giving RPS 0.1354 — but the paired-bootstrap comparison against the shipped 50/50 does **not** clear 95% significance: ΔRPS = −0.0062, 95% CI **[−0.0133, +0.0014]** (straddles zero), P(tuned better) = 0.948. Per the project's own convention (a 95% CI that straddles zero is "not statistically distinguishable," the same bar applied to Full-vs-FIFA-only below), **the 50/50 default ships unchanged.** This is a genuinely close call — the point estimate, and a confirmatory re-run of the §7a temporal knockout backtest at weight=0.0 (RPS 0.1209, better than 50/50's 0.1316), both favor more Elo weight — but the pre-registered decision rule required the more statistically powered nested-LOO test to clear significance first, and it fell just short (P=0.948 vs the 0.95 bar). Worth revisiting once more tournament data accumulates; not treated as settled either way.
+- **Ensemble vs Naive:** ΔRPS = −0.0775, 95% CI [−0.1063, −0.0498], P(Ensemble better) = **1.000**. The ensemble is **statistically significantly** better than naive base-rates (+34.7% RPS, +22.7% log-loss).
+- **Full vs FIFA-only:** ΔRPS = −0.0005, 95% CI [−0.0053, +0.0044], P(Full better) = 0.591. The interval straddles zero more comfortably than before AFC data was added — the event-data edge over the FIFA prior alone is **not conclusive** at 95% confidence, and filling in the AFC-lean teams narrowed rather than widened the gap.
+- **Ensemble vs Full:** ΔRPS = −0.0123, 95% CI [−0.0194, −0.0053], P(Ensemble better) = **1.000** — entirely negative interval, a robust improvement. A 50/50 average of the xG/Dixon-Coles W/D/L and the Elo W/D/L beats either model alone because the two are **orthogonal**: the xG model scores possession/shot quality, Elo scores goal-based dynamic form using every match. This is the **shipped predictor** (`footy/ratings/ensemble.py`); the scoreline grid is still taken from the xG model (Elo has no grid), while the headline W/D/L blends both.
+- **Elo vs Ensemble — investigated, weight retained at 0.5:** plain Elo (RPS 0.1408) has a *lower* point estimate than the 50/50 ensemble (0.1460) — the same reversal seen pre-AFC, still present after the AFC fix. Refitting the blend weight with the leakage-free nested-LOO protocol (see §6) lands at `w*=0.0` (pure Elo) on every fold, giving RPS 0.1408 — but the paired-bootstrap comparison against the shipped 50/50 does **not** clear 95% significance: ΔRPS = −0.0052, 95% CI **[−0.0119, +0.0017]** (straddles zero), P(tuned better) = 0.931 — narrower than the pre-AFC 0.948, i.e. moving slightly further from significance, not closer. Per the project's own convention (a 95% CI that straddles zero is "not statistically distinguishable," the same bar applied to Full-vs-FIFA-only below), **the 50/50 default ships unchanged.** A confirmatory re-run of the §7a temporal knockout backtest at weight=0.0 gives a genuinely mixed signal post-AFC: RPS improves (0.1190 vs 50/50's 0.1297) but top-1 accuracy drops (18/24 vs 19/24) — reinforcing, not undermining, the decision to leave this unresolved rather than force a switch on ambiguous evidence.
 
 **The deeper lesson.** Elo wins for a concrete, instructive reason: it learns from the *goals* in every match, whereas the xG model can only learn from matches that carry shot coordinates — it discards qualifiers with no shot data (CAF/OFC in particular). The "sophistication" of insisting on xG quietly starves the model of some of its signal. This is one of the most useful findings in the project: **a large part of the cheapest accuracy gain is not a fancier estimator, but feeding the model the goal-based history Elo already uses.** Elo makes a strong, recognised external benchmark, sitting at or above the event-data model and well above naive — and on the fuller dataset, at or above the ensemble too.
 
@@ -207,11 +207,11 @@ re-running it after pulling later rounds extends the eval set with no code chang
 | Metric | Result |
 |---|---|
 | Top-1 accuracy | **79% (19/24)** |
-| RPS | 0.1316 |
-| Log-loss | 0.7148 |
-| RPS improvement vs naive baseline | **+45.1%** |
-| Round of 32 (16 matches) | 13/16 (81%), RPS 0.1336 |
-| Round of 16 (8 matches) | 6/8 (75%), RPS 0.1276 |
+| RPS | 0.1297 |
+| Log-loss | 0.7040 |
+| RPS improvement vs naive baseline | **+45.7%** |
+| Round of 32 (16 matches) | 13/16 (81%), RPS 0.1319 |
+| Round of 16 (8 matches) | 6/8 (75%), RPS 0.1253 |
 
 **Reading the misses.** Of the 5 matches where the model's favorite didn't win
 outright in 90 minutes, **4 were draws that went to a penalty shootout**
@@ -223,7 +223,7 @@ the model predicts 90-minute W/D/L, not "who advances," and a thin penalty-shoot
 layer on top (roughly a coin flip with a small skill-based lean) would resolve most
 of what currently reads as error.
 
-**Calibration.** The average confidence of the model's knockout favorite was 54%,
+**Calibration.** The average confidence of the model's knockout favorite was 56%,
 yet those favorites won 79% of the time — the model is **underconfident** on
 knockout football, a healthier failure mode than overconfidence, and a candidate for
 a cheap sharpening/temperature adjustment.
@@ -234,12 +234,14 @@ that hadn't happened yet, scored after the fact.
 
 **Confirmatory check for the blend-weight question (§6/§7).** The same temporal
 protocol at `weight=0.0` (pure Elo, the value the nested-LOO search kept landing on)
-gives RPS 0.1209 vs the shipped 50/50's 0.1316 on these 24 matches — consistent with
-Elo's edge elsewhere in this writeup. This *confirms* the point-estimate direction but
-does not override the significance gate in §6/§7: with only 24 matches this
-comparison alone has no formal power, and the pre-registered decision rule was to
-ship a re-tuned weight only if the (separately more powerful) nested-LOO test on all
-96 matches cleared 95% significance, which it did not. Recorded here for completeness,
+gives RPS 0.1190 vs the shipped 50/50's 0.1297 on these 24 matches — the RPS point
+estimate still favors more Elo weight, consistent with Elo's edge elsewhere in this
+writeup, but top-1 accuracy at `weight=0.0` is actually *lower* (18/24 vs 19/24) — a
+genuinely mixed signal, not a clean confirmation. Neither result overrides the
+significance gate in §6/§7: with only 24 matches this comparison alone has no formal
+power, and the pre-registered decision rule was to ship a re-tuned weight only if the
+(separately more powerful) nested-LOO test on the full 548-match dataset cleared 95%
+significance, which it did not. Recorded here for completeness,
 not as a second vote to override the gate.
 
 ---
@@ -285,10 +287,9 @@ chase by fitting the constant to these 4 games.
 
 ## 8. Limitations and Next Steps
 
-- **The Full-vs-FIFA-only edge is still not conclusively significant**, even at 96 matches (P=0.961, CI nearly excludes zero). A larger or rolling backtest across multiple tournaments would be needed to fully resolve it.
-- **The blend-weight question is investigated but not closed.** The evidence (in-sample point estimate, nested-LOO, and a confirmatory temporal re-run) consistently favors more Elo weight, but the formal significance test fell just short of the 95% bar (P=0.948). Revisit as more tournament data accumulates — see §7's "Elo vs Ensemble" bullet for the full numbers.
-- **Confidence sharpening not implemented.** §7a shows the knockout-stage favorite is underconfident (54% average confidence, 79% actual hit rate). A single temperature/Platt-scaling parameter, fit via the same nested-LOO protocol as the blend weight, is the defensible next step — deferred because 24 knockout games is a thin sample to fit a sharpening parameter against; worth revisiting if the *full* 96-match LOO reliability curve shows the same pattern, not just the knockout subset.
-- **AFC qualifier feed not yet pulled.** Asian teams currently lean more heavily on the FIFA prior than European or CONMEBOL sides. Pulling the full AFC timeline would improve their calibration — more relevant now that these teams have actually played the tournament.
+- **The Full-vs-FIFA-only edge is still not conclusively significant** (P=0.591, CI comfortably straddles zero) — this gap narrowed, not widened, once AFC qualifier data filled in the previously FIFA-prior-only teams. A larger or rolling backtest across multiple tournaments would be needed to fully resolve it.
+- **The blend-weight question is investigated but not closed.** The in-sample point estimate and nested-LOO consistently favor more Elo weight, but the formal significance test fell just short of the 95% bar both before AFC data (P=0.948) and after (P=0.931) — the AFC fix moved the estimate slightly further from significance, not closer. A confirmatory temporal re-run gives a genuinely mixed signal (RPS favors more Elo weight, top-1 accuracy favors the shipped 50/50). Revisit as more tournament data accumulates — see §7's "Elo vs Ensemble" bullet for the full numbers.
+- **Confidence sharpening not implemented.** §7a shows the knockout-stage favorite is underconfident (56% average confidence, 79% actual hit rate). A single temperature/Platt-scaling parameter, fit via the same nested-LOO protocol as the blend weight, is the defensible next step — deferred because 24 knockout games is a thin sample to fit a sharpening parameter against; worth revisiting if the *full* LOO reliability curve shows the same pattern, not just the knockout subset.
 - **Trial-tier coordinate gaps.** Sportradar's trial tier omits shot coordinates for some confederations (CAF in particular). Those matches are excluded from xG training, so the xG model is biased toward the coordinate-rich corpus.
 - **~2 WC games per team.** Even with qualifiers, World Cup tournament performance is still extrapolated from a small within-competition sample; form can shift between qualifiers and the tournament itself.
 - **No form decay.** The current model weights all matches equally regardless of recency. A time-discounting scheme (exponential decay on older matches) is the most obvious next step.

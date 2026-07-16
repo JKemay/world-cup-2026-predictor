@@ -33,14 +33,14 @@ See also: [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for full modeling rationale
 
 | Stage | Module | Status |
 |---|---|---|
-| Cached Sportradar client | `footy/ingest/sportradar.py` | ✅ 96 WC + 324 qualifier matches cached |
-| xG model (logistic: distance + angle) | `footy/features/xg.py` | ✅ trained on 2,633 shots, perfectly calibrated |
+| Cached Sportradar client | `footy/ingest/sportradar.py` | ✅ 96 WC + 452 qualifier matches cached (incl. AFC) |
+| xG model (logistic: distance + angle) | `footy/features/xg.py` | ✅ trained on shots from all 548 matches, perfectly calibrated |
 | Team ratings (Dixon-Coles + FIFA prior) | `footy/ratings/dixon_coles.py` | ✅ |
 | Scoreline grid + W/D/L | `footy/ratings/dixon_coles.py` | ✅ |
 | Evaluation harness (LOO, RPS, log-loss) | `footy/evaluate/` | ✅ Full +20.5% RPS vs naive |
-| Qualifier data pull | `pull_qualifiers.py` | ✅ ~10 games/team |
-| Hyperparameter tuning | `tune.py` | ✅ defaults re-validated on 96-match dataset |
-| Elo benchmark | `footy/ratings/elo.py` | ✅ edges the ensemble on knockout data (RPS 0.135 vs 0.142; not yet significant, P=0.948) |
+| Qualifier data pull | `pull_qualifiers.py` | ✅ ~10 games/team, all 6 confederations incl. AFC |
+| Hyperparameter tuning | `tune.py` | ✅ defaults re-validated |
+| Elo benchmark | `footy/ratings/elo.py` | ✅ edges the ensemble (RPS 0.141 vs 0.146; not yet significant, P=0.931) |
 | **Ensemble (xG + Elo) — shipped** | `footy/ratings/ensemble.py` | ✅ **significantly beats the full xG model (P=1.000)** |
 | **Out-of-sample knockout validation** | `backtest_temporal.py` | ✅ **79% top-1 on 24 real 2026 WC knockout matches** |
 | Penalty-shootout / advancement layer | `footy/ratings/shootout.py` | ✅ opt-in, fixed a priori (not fitted to n=4 shootouts) |
@@ -48,27 +48,27 @@ See also: [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for full modeling rationale
 
 ## Results
 
-**Dataset:** 96 World Cup + 324 qualifier matches (420 total) — the full 2026 tournament through the knockout stage. **Backtest protocol:** leave-one-out on the 96 WC matches.
+**Dataset:** 96 World Cup + 452 qualifier matches (548 total, all 6 confederations including AFC) — the full 2026 tournament through the knockout stage. **Backtest protocol:** leave-one-out on the 96 WC matches.
 
 | Model | log-loss | RPS | top-1 |
 |---|---|---|---|
-| **Ensemble (xG + Elo) — shipped** | 0.7962 | 0.1415 | 67% |
-| Ensemble + draw calibration | **0.8133** | 0.1387 | 68% |
-| Elo benchmark | 0.7770 | **0.1354** | 64% |
-| Full (xG + FIFA + form) | 0.8493 | 0.1565 | 68% |
-| FIFA-only | 0.8638 | 0.1614 | 66% |
+| **Ensemble (xG + Elo) — shipped** | 0.8134 | 0.1460 | 66% |
+| Ensemble + draw calibration | 0.8299 | 0.1438 | 67% |
+| Elo benchmark | 0.8027 | **0.1408** | 69% |
+| Full (xG + FIFA + form) | 0.8554 | 0.1583 | 67% |
+| FIFA-only | 0.8556 | 0.1589 | 66% |
 | Naive base-rate | 1.0529 | 0.2235 | 48% |
 
-**Bootstrap significance (10 000 resamples, paired), on the refreshed 96-match dataset:**
+**Bootstrap significance (10 000 resamples, paired), on the 548-match dataset:**
 
-- **Ensemble vs Full:** ΔRPS = −0.0150, 95% CI [−0.0227, −0.0071], P(Ensemble better) = **1.000** — **statistically significant**. Averaging the xG/Dixon-Coles model with the Elo model beats either alone, because the two capture *orthogonal* signal (shot quality vs goal-based dynamic form). This is the shipped predictor.
-- **Ensemble vs Naive:** ΔRPS = −0.0820, 95% CI [−0.1096, −0.0554], P = **1.000** — **+36.7% RPS / +24.4% log-loss**.
-- **Full vs FIFA-only:** ΔRPS = −0.0049, 95% CI [−0.0103, +0.0005], P = 0.961 — **not distinguishable** at 95% confidence.
-- **Elo vs Ensemble on knockout-heavy data — investigated, 50/50 retained:** with the tournament's knockout matches folded in, plain Elo (RPS 0.1354) now edges the 50/50 ensemble (0.1415). A leakage-free (nested-LOO) re-tune of the blend weight confirms the point-estimate gain but doesn't clear 95% significance (ΔRPS −0.0062, 95% CI [−0.0133, +0.0014], P=0.948) — so the ensemble ships unchanged at 50/50. See [AGENTS.md](AGENTS.md) and `docs/METHODOLOGY.md` §6–7 for the full writeup.
+- **Ensemble vs Full:** ΔRPS = −0.0123, 95% CI [−0.0194, −0.0053], P(Ensemble better) = **1.000** — **statistically significant**. Averaging the xG/Dixon-Coles model with the Elo model beats either alone, because the two capture *orthogonal* signal (shot quality vs goal-based dynamic form). This is the shipped predictor.
+- **Ensemble vs Naive:** ΔRPS = −0.0775, 95% CI [−0.1063, −0.0498], P = **1.000** — **+34.7% RPS / +22.7% log-loss**.
+- **Full vs FIFA-only:** ΔRPS = −0.0005, 95% CI [−0.0053, +0.0044], P = 0.591 — **not distinguishable** at 95% confidence (this gap narrowed further once AFC qualifier data filled in the FIFA-prior-only teams).
+- **Elo vs Ensemble — investigated, 50/50 retained:** plain Elo (RPS 0.1408) edges the 50/50 ensemble (0.1460). A leakage-free (nested-LOO) re-tune of the blend weight confirms the point-estimate gain but doesn't clear 95% significance (ΔRPS −0.0052, 95% CI [−0.0119, +0.0017], P=0.931) — so the ensemble ships unchanged at 50/50. See [AGENTS.md](AGENTS.md) and `docs/METHODOLOGY.md` §6–7 for the full writeup.
 
 **Key narrative:** on WC-only data (~2 games/team) the event model was −3.0% RPS vs the FIFA baseline — fitting noise. Qualifier data (~10 games/team) flipped that to a real edge, and benchmarking against **Elo** exposed the deeper lesson — a simple goal-based rating rivals the sophisticated xG model, because xG throws away matches with no shot data. The resolution: **ensemble the two**, which is a statistically significant gain (P=1.000) and is the shipped model. The scoreline grid still comes from the xG model (Elo has none); the W/D/L blends both.
 
-**Hyperparameter tuning:** grid search over `alpha` × `fifa_scale`, re-run on the 96-match dataset, confirms the defaults (`alpha=0.05`, `fifa_scale=1.0`) sit on a flat surface — the nominal best cell (`alpha=0.01`, `fifa_scale=2.0`) improves RPS by only 1.6%, which the tuning script itself flags as likely noise rather than signal.
+**Hyperparameter tuning:** grid search over `alpha` × `fifa_scale` confirms the defaults (`alpha=0.05`, `fifa_scale=1.0`) sit on a flat surface — the nominal best cell improves RPS by only ~1.6%, which the tuning script itself flags as likely noise rather than signal.
 
 ## Out-of-sample validation (knockout stage)
 
@@ -83,9 +83,9 @@ each match** — a strict temporal backtest with zero lookahead, implemented in
 | Metric | Result |
 |---|---|
 | **Top-1 accuracy** | **79% (19/24)** |
-| RPS | 0.1316 |
-| Log-loss | 0.7148 |
-| **RPS improvement vs naive baseline** | **+45.1%** |
+| RPS | 0.1297 |
+| Log-loss | 0.7040 |
+| **RPS improvement vs naive baseline** | **+45.7%** |
 | Round of 32 accuracy | 13/16 (81%) |
 | Round of 16 accuracy | 6/8 (75%) |
 
@@ -160,9 +160,10 @@ streamlit run app/streamlit_app.py
 
 ## Data
 
-Sportradar Soccer Extended (trial tier). 420 matches cached (96 World Cup + 324
-qualifiers), 2,633 shots. Every response is cached under `data/` so re-runs cost
-zero API calls. The source is swappable — add another adapter in `footy/ingest/`
+Sportradar Soccer Extended (trial tier). 548 matches cached (96 World Cup + 452
+qualifiers across all 6 confederations, including AFC). Every response is cached
+under `data/` so re-runs cost zero API calls. The source is swappable — add
+another adapter in `footy/ingest/`
 (e.g. StatsBomb) and nothing downstream changes.
 
 ## Example
