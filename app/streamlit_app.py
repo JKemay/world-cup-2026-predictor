@@ -303,10 +303,10 @@ each match (strict chronological cutoff, no leave-one-out shortcuts):
 | Top-1 accuracy | **79% (19/24)** |
 | RPS improvement vs naive | **+45.1%** |
 
-4 of the 5 misses were 90-minute draws that went to penalty shootouts — the model's favorite
-actually won 3 of those 4 shootouts, so most of what reads as "error" is really the model having
-no representation of the shootout branch. A thin, fixed-parameter advancement layer for that
-case is available via the "Knockout tie" toggle above.
+4 of the 5 misses were 90-minute draws that went to penalty shootouts, so most of what reads
+as "error" is really the model having no representation of the shootout branch at all — not a
+90-minute prediction mistake. A thin, fixed-parameter advancement layer for that case is
+available via the "Knockout tie" toggle above.
 
 **Hyperparameter tuning**, re-run on the 96-match dataset, confirmed the defaults
 (α = 0.05, FIFA scale = 1.0) still sit near the RPS minimum on a flat surface.

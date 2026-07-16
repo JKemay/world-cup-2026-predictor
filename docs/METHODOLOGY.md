@@ -211,12 +211,12 @@ re-running it after pulling later rounds extends the eval set with no code chang
 | Log-loss | 0.7148 |
 | RPS improvement vs naive baseline | **+45.1%** |
 | Round of 32 (16 matches) | 13/16 (81%), RPS 0.1336 |
-| Round of 16 → Final (8 matches) | 6/8 (75%), RPS 0.1276 |
+| Round of 16 (8 matches) | 6/8 (75%), RPS 0.1276 |
 
 **Reading the misses.** Of the 5 matches where the model's favorite didn't win
 outright in 90 minutes, **4 were draws that went to a penalty shootout**
 (Germany–Paraguay, Netherlands–Morocco, Australia–Egypt, Switzerland–Colombia) — and
-in 3 of those 4, the model's favored team won the shootout and advanced anyway. Only
+in 2 of those 4, the model's favored team won the shootout and advanced anyway. Only
 one match (Norway's win over Brazil) was a genuine wrong-winner call at 90 minutes.
 This points at a specific, addressable gap rather than a general accuracy problem:
 the model predicts 90-minute W/D/L, not "who advances," and a thin penalty-shootout
@@ -272,12 +272,14 @@ those 4 real shootouts:
 | Germany vs Paraguay | Germany 69% / Paraguay 31% | Paraguay |
 | Netherlands vs Morocco | Netherlands 44% / Morocco 56% | Morocco |
 | Australia vs Egypt | Australia 45% / Egypt 55% | Egypt |
-| Switzerland vs Colombia | Switzerland 44% / Colombia 56% | Colombia |
+| Switzerland vs Colombia | Switzerland 44% / Colombia 56% | Switzerland |
 
-3 of 4 land in a plausible near-50% band, and in those 3 the model's lean matches the
-actual winner. Germany–Paraguay is the outlier (69%, and Germany still lost) — a
-reminder that even a well-calibrated near-coin-flip model will "miss" a meaningful
-fraction of genuine coin flips, which is expected, not a bug to chase on n=4.
+3 of 4 land in a plausible near-50% band (Germany–Paraguay's 69% lean is the outlier),
+but the model's lean only matches the actual winner in 2 of the 4 (Morocco, Egypt) —
+Germany and Switzerland both won their shootout probability estimate but lost the
+actual shootout. With n=4, 2-of-4 is well within what a genuinely near-coin-flip model
+should produce; it is not evidence the scale constant is wrong, and it is not a bug to
+chase by fitting the constant to these 4 games.
 
 ---
 

@@ -51,8 +51,9 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
   chronological backtest: each of the 24 R32+R16 knockout matches predicted using a
   model trained only on data available before that match — no LOO shortcuts. **79%
   top-1 (19/24), RPS 0.1316, +45.1% vs naive.** 4 of the 5 misses were 90-minute draws
-  that went to penalty shootouts (the model's favorite won 3 of those 4 shootouts) —
-  see the shootout layer below. See `docs/METHODOLOGY.md` §7a for full writeup.
+  that went to penalty shootouts (the model's favorite won 2 of those 4 shootouts,
+  in line with a well-calibrated near-coin-flip shootout model) — see the shootout
+  layer below. See `docs/METHODOLOGY.md` §7a for full writeup.
 - **Penalty-shootout / advancement layer** (`footy/ratings/shootout.py`,
   `advancement_prob`) — thin, opt-in, decoupled from `EnsemblePredictor`'s W/D/L
   contract. Resolves the 90'-drawn branch via a fixed-a-priori logistic on the Elo

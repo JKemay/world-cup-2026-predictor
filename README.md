@@ -90,8 +90,10 @@ each match** — a strict temporal backtest with zero lookahead, implemented in
 | Round of 16 accuracy | 6/8 (75%) |
 
 Of the 5 games the model's favorite didn't win outright, **4 were 90-minute draws
-that went to penalty shootouts** — and the model's pick advanced on penalties in 3 of
-those. Only one game (Norway's win over Brazil) was a genuine wrong-winner call. The
+that went to penalty shootouts** — and the model's pick advanced on penalties in 2 of
+those. Only one game (Norway's win over Brazil) was a genuine wrong-winner call at 90
+minutes; the other two shootout losses are exactly what a well-calibrated near-coin-flip
+shootout model should produce some of the time. The
 model's average favorite carried 54% confidence but won 79% of the time — a sign the
 model is honestly *underconfident* rather than overconfident, a healthier failure
 mode than the reverse.
