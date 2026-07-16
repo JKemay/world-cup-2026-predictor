@@ -39,6 +39,30 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
 - 117-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
   ruff-clean (line-length 120).
 
+## Scope decision (2026-07-14) — international-only; club football is a separate project
+
+This model **stays international-only** (World Cup + qualifiers). Club football
+(Premier League first, then maybe La Liga) will be a **separate project** that
+imports a shared core, not an extension of this one. Rationale:
+
+- **Ratings aren't transferable across populations** — clubs and national teams
+  share no common opponents, so they cannot be co-calibrated on one scale. Even
+  "one model" would need separately-fitted instances, so separation is forced.
+- **The FIFA-rank prior has no club equivalent** — this model's identity is
+  thin-sample stabilization (2 games/team at a WC). Club football is the
+  opposite regime (38+ games/season, rich data); it anchors on Elo / market
+  value instead, and leans less on priors.
+- **Different confounders:** club football has strong, stable **home advantage**
+  (vs neutral-venue WC knockouts), transfer windows, rotation, fixture
+  congestion, and per-league scoring baselines — all absent here.
+
+**Reuse plan:** promote the league-agnostic engine (xG-from-geometry,
+Dixon-Coles, Elo, ensemble, evaluation harness) to a shared importable core;
+the club project swaps ingest, prior, venue handling, and adds club-specific
+features. Portfolio-wise, two clean projects beat one sprawling one. Start the
+club model on the **Premier League** (richest public xG data), prove it
+end-to-end, then generalize — the same incremental path this project took.
+
 ## Open items / next steps
 
 - **Pull AFC (Asian) qualifiers** — they aren't under the same Sportradar
