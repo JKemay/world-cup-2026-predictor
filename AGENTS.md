@@ -14,29 +14,54 @@ grid → leave-one-out backtest. There's an interactive Streamlit dashboard.
 
 ## Current state (✅ done)
 
-- Cached Sportradar client; 52 World Cup + 324 qualifier matches pulled.
-- xG model (logistic, distance + angle), perfectly calibrated.
+- Cached Sportradar client; 96 World Cup 2026 matches (group stage through the
+  Round of 16, pulled as each round completed) + 324 qualifier matches.
+- xG model (logistic, distance + angle) trained on 2,633 shots, perfectly calibrated.
 - Dixon-Coles ratings with FIFA prior — ratings pass the smell test
-  (Spain #1, France #4; weakest: Gibraltar, Curaçao).
-- Honest LOO backtest (RPS, log-loss). **Headline finding:** the event-data
-  model went from −3.0% RPS vs a FIFA-only baseline on WC-only data
-  (~2 games/team) to **+0.7%** once qualifier data (~10 games/team) was added,
-  and **+20.5% vs naive**. 67% top-1, 0.161 RPS.
-- Streamlit dashboard (`app/streamlit_app.py`), deploy-ready from a committed
-  snapshot (`app/match_table.csv`).
+  (Spain #1, Argentina #2; weakest: Gibraltar, Curaçao).
+- Honest LOO backtest (RPS, log-loss), re-run on the 96-match dataset.
+  **Headline finding:** the event-data model went from −3.0% RPS vs a FIFA-only
+  baseline on WC-only data (~2 games/team) to a real edge once qualifier data
+  (~10 games/team) was added.
+- Streamlit dashboard (`app/streamlit_app.py`), **deployed**: https://world-cup-2026-ml.streamlit.app
 - **Elo benchmark** (`footy/ratings/elo.py`, `build_elo.py`) — World-Football-style
-  Elo, leakage-free on the WC eval set. **Key finding:** Elo (RPS 0.1459) *edges* the
-  Full xG model (0.1606), because Elo learns from goals in all 376 matches while the
-  xG model discards the ~133 with no shot data.
+  Elo, leakage-free on the WC eval set. **Key finding:** Elo (RPS 0.1354) *edges* the
+  Full xG model (0.1565) and, on the 96-match dataset, also edges the 50/50
+  ensemble (0.1415) — see the blend-weight finding below.
 - **Ensemble = SHIPPED predictor** (`footy/ratings/ensemble.py`, `EnsemblePredictor`)
-  — 50/50 blend of the xG/Dixon-Coles W/D/L and the Elo W/D/L. **RPS 0.1491, log-loss
-  0.8395**; significantly beats the Full model (ΔRPS −0.0115, 95% CI [−0.0224, −0.0004],
-  P=0.98) and naive (P=0.99) — the project's first significant gain. `build_eval.py`,
-  `build_ratings.py`, and the dashboard all use it. The **scoreline grid stays
-  Dixon-Coles** (Elo has no grid); only the W/D/L blends. Top-1 dips slightly (65% vs
-  67%) — the usual calibration-vs-picks trade. To get pure xG behaviour, use
-  `DixonColesRatings` directly instead of `EnsemblePredictor`.
-- 117-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
+  — 50/50 blend of the xG/Dixon-Coles W/D/L and the Elo W/D/L. **RPS 0.1415, log-loss
+  0.7962**; significantly beats the Full model (ΔRPS −0.0150, 95% CI [−0.0227, −0.0071],
+  P=1.000) and naive (P=1.000, +36.7% RPS). `build_eval.py`, `build_ratings.py`, and
+  the dashboard all use it. The **scoreline grid stays Dixon-Coles** (Elo has no grid);
+  only the W/D/L blends. To get pure xG behaviour, use `DixonColesRatings` directly
+  instead of `EnsemblePredictor`.
+- **Blend-weight re-tune — explored, not shipped** (`footy/evaluate/backtest.py`:
+  `fit_blend_weight`, `nested_blend_predictions`). The 50/50 weight was chosen on the
+  original 52-match dataset; on the fuller 96-match one, Elo alone has a better point
+  estimate than the ensemble, and an in-sample weight search lands at `w*=0.0` (pure
+  Elo). A leakage-free nested-LOO re-estimate confirms the point-estimate gain (RPS
+  0.1354 vs 0.1415) but does **not** clear 95% significance: P(tuned better)=0.948,
+  95% CI [−0.0133, +0.0014] (straddles zero). **Decision: kept the 0.5 default.** This
+  is a "suggestive, not proven" result, not a rejection — revisit once more tournament
+  data accumulates. `build_eval.py`'s previous 3-way (DC/Elo/OL) simplex search was
+  **leaky** (tuned and scored on the same LOO set) and has been replaced by this
+  honest protocol.
+- **Out-of-sample validation — the real 2026 WC knockout stage**
+  (`backtest_temporal.py`, `footy.evaluate.backtest.temporal_backtest`). Strict
+  chronological backtest: each of the 24 R32+R16 knockout matches predicted using a
+  model trained only on data available before that match — no LOO shortcuts. **79%
+  top-1 (19/24), RPS 0.1316, +45.1% vs naive.** 4 of the 5 misses were 90-minute draws
+  that went to penalty shootouts (the model's favorite won 3 of those 4 shootouts) —
+  see the shootout layer below. See `docs/METHODOLOGY.md` §7a for full writeup.
+- **Penalty-shootout / advancement layer** (`footy/ratings/shootout.py`,
+  `advancement_prob`) — thin, opt-in, decoupled from `EnsemblePredictor`'s W/D/L
+  contract. Resolves the 90'-drawn branch via a fixed-a-priori logistic on the Elo
+  gap (`SHOOTOUT_ELO_SCALE=2000`, deliberately flat/near-coin-flip; **not** fitted
+  against observed shootouts — n=4 in 2026 is noise). Plausibility-checked (not
+  statistically validated) against the 4 real 2026 WC shootouts via
+  `backtest_temporal.py --shootout`. Surfaced in the Streamlit app as a "Knockout tie"
+  toggle.
+- 176-test pytest suite, GitHub Actions CI (ruff + pytest), MIT license,
   ruff-clean (line-length 120).
 
 ## Scope decision (2026-07-14) — international-only; club football is a separate project
@@ -67,28 +92,36 @@ end-to-end, then generalize — the same incremental path this project took.
 
 - **Pull AFC (Asian) qualifiers** — they aren't under the same Sportradar
   "FIFA World Cup Qualification" competition tree, so Japan / South Korea / Iran
-  currently lean on the FIFA prior. Extend `pull_qualifiers.py` discovery.
-- **Streamlit Community Cloud deploy** — point it at `app/streamlit_app.py`
-  (needs a GitHub OAuth login; the public app URL is the resume link).
+  currently lean on the FIFA prior. Extend `pull_qualifiers.py` discovery. More
+  relevant now than when first flagged, since these teams actually played the
+  tournament.
 - **Market-odds benchmark (in progress)** — OddsPapi has a free tier with historical
   pre-match 1X2 odds covering internationals (needs a free self-serve `ODDSPAPI_API_KEY`
   in `.env`). Plan: match our fixtures to OddsPapi by team+date, convert to no-vig
   probabilities, compare model vs market vs Elo vs FIFA vs naive + a betting-ROI sim.
-- ✅ **DONE — Elo ensemble shipped** (see Current state). Elo-strength as the Dixon-Coles
-  prior also helped (RPS 0.1542) but wasn't significant alone; the 50/50 ensemble was, so
-  that shipped. `goals_fallback`/`sos_weighting` remain validated-but-off alternatives.
-- **Remaining accuracy ideas:** tune the ensemble blend weight (50/50 is unoptimized) or
-  weight by per-team data volume; a richer xG model via StatsBomb open data; a hierarchical
-  Bayesian rebuild for principled thin-data shrinkage.
-- The +0.7% edge over FIFA-only is within sampling noise on 52 eval matches —
-  more/better data is the path to a decisive result.
+- ✅ **DONE — Elo ensemble shipped, blend weight re-validated** (see Current state).
+  `goals_fallback`/`sos_weighting` remain validated-but-off alternatives.
+- ✅ **DONE — Out-of-sample knockout validation + penalty-shootout layer** (see Current
+  state). `backtest_temporal.py`, `footy/ratings/shootout.py`.
+- **Confidence sharpening — deferred, not implemented.** The knockout-stage favorite
+  averages 54% confidence but wins 79% of the time (underconfident). A defensible fix
+  is a single temperature/Platt-scaling parameter fit via the same nested-LOO protocol
+  as the blend weight. Deferred because 24 knockout games is a thin sample to fit a
+  sharpening parameter against without risking refitting noise — only pick this up if
+  the reliability curve on the *full* 96-match LOO set (not just the 24 knockout games)
+  shows the same underconfidence.
+- Pull the remaining knockout rounds (Quarterfinals, Semifinals, Final) into the cache
+  as they're played, and re-run `build_eval.py` + `backtest_temporal.py` — the temporal
+  script auto-detects however many `WC_SEASON_ID` matches fall after `KNOCKOUT_START`,
+  so no code change needed, just a fresh `pull_worldcup.py` run.
+- A richer xG model via StatsBomb open data, or a hierarchical Bayesian rebuild for
+  principled thin-data shrinkage, remain open longer-term ideas.
 - Biggest model misses are **under-predicted draws** (favorites dropping points,
   e.g. Spain–Cape Verde, England–Ghana, Portugal–Congo DR) — a candidate modeling improvement.
-- **Bootstrap significance + hyperparameter tuning are done.** `build_eval.py` now
-  prints 95% CIs (Full vs Naive: significant; Full vs FIFA-only: not distinguishable
-  on 52 eval matches). `tune.py` maps the `alpha` × `fifa_scale` surface
-  (`tune_alpha_fifa.png`) — defaults are within 0.18% RPS of the global best, surface
-  is flat.
+- **Bootstrap significance + hyperparameter tuning are done**, re-run on the 96-match
+  dataset. `build_eval.py` prints 95% CIs (Ensemble vs Naive: significant; Full vs
+  FIFA-only: not distinguishable). `tune.py` maps the `alpha` × `fifa_scale` surface
+  (`tune_alpha_fifa.png`) — defaults remain close to the best cell on a flat surface.
 
 ### Explored and rejected
 
@@ -131,7 +164,7 @@ These still work because their inputs are committed:
 
 ```bash
 streamlit run app/streamlit_app.py   # dashboard — uses app/match_table.csv
-python3 -m pytest -q                  # 73/74 pass; 1 xG-calibration test skips w/o data
+python3 -m pytest -q                  # 176/177 pass; 1 xG-calibration test skips w/o data
 ruff check .                          # lint
 ```
 
@@ -140,21 +173,25 @@ ruff check .                          # lint
 Run in order — each step is idempotent and caches every API response:
 
 ```bash
-python3 pull_worldcup.py     # 52 WC match timelines        -> data/raw/
+python3 pull_worldcup.py     # WC match timelines (grows each round)  -> data/raw/
 python3 pull_qualifiers.py   # ~324 qualifier timelines (~10 min, rate-limited)
 python3 build_xg.py          # train xG -> data/processed/shots_xg.csv, xg_pitch.png
 python3 build_ratings.py     # fit ratings -> team_ratings.csv, france_iraq_grid.png
 python3 build_eval.py        # LOO backtest -> backtest.csv, calibration.png
+python3 backtest_temporal.py # temporal out-of-sample knockout backtest (see Current state)
 python3 analyze_results.py   # 3-panel analysis -> model_analysis.png
 ```
 
 ## Layout
 
 - `footy/` — the package: `ingest/` (cached Sportradar client), `features/`
-  (shots → xG, match table), `ratings/` (Dixon-Coles, FIFA prior), `evaluate/`
-  (backtest). Trained model in `footy/models/`.
-- `build_*.py`, `pull_*.py`, `spike_sportradar.py`, `analyze_results.py` —
-  entry-point scripts (they mutate `sys.path` to import `footy`).
+  (shots → xG, match table), `ratings/` (Dixon-Coles, Elo, FIFA prior,
+  `shootout.py` — penalty-shootout advancement layer), `evaluate/` (backtest,
+  including `temporal_backtest` for strict chronological out-of-sample scoring).
+  Trained model in `footy/models/`.
+- `build_*.py`, `pull_*.py`, `spike_sportradar.py`, `analyze_results.py`,
+  `backtest_temporal.py` — entry-point scripts (they mutate `sys.path` to
+  import `footy`).
 - `app/` — Streamlit dashboard + committed `match_table.csv` snapshot.
 - `tests/` — pytest suite. `docs/METHODOLOGY.md` — the writeup.
 

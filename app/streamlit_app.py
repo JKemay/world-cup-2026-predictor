@@ -106,7 +106,8 @@ def main() -> None:
             "- **Ratings** via regularized Poisson regression on xG, not raw goals\n"
             "- **FIFA rank** as a Bayesian-style prior, stabilizing thin samples\n"
             "- **Elo rating** (goal-based) ensembled with the xG model for W/D/L\n"
-            "- **Backtest:** ensemble is +26% RPS vs naive and significantly beats the xG model alone (P=0.98)"
+            "- **Backtest:** ensemble is +36.7% RPS vs naive (P=1.000); "
+            "out-of-sample on the real 2026 knockout stage: 79% top-1 (19/24), +45.1% RPS vs naive"
         )
         st.markdown("---")
         st.markdown(
@@ -169,6 +170,24 @@ def main() -> None:
             yaxis=dict(showticklabels=False),
         )
         st.plotly_chart(bar, use_container_width=True)
+
+        if st.toggle("Knockout tie (extra time + penalties if drawn)"):
+            from footy.ratings.shootout import advancement_prob
+
+            fwd = model.wdl(home, away)
+            rev = model.wdl(away, home)
+            wdl_neutral = np.array([(fwd[0] + rev[2]) / 2, (fwd[1] + rev[1]) / 2, (fwd[2] + rev[0]) / 2])
+            wdl_neutral = wdl_neutral / wdl_neutral.sum()
+            gap = model.elo_.ratings.get(home, 1500.0) - model.elo_.ratings.get(away, 1500.0)
+            p_home_adv, p_away_adv = advancement_prob(wdl_neutral, gap)
+            a1, a2 = st.columns(2)
+            a1.metric(f"🏆 {home} advances", f"{p_home_adv*100:.0f}%")
+            a2.metric(f"🏆 {away} advances", f"{p_away_adv*100:.0f}%")
+            st.caption(
+                "Neutral-venue W/D/L, with the drawn-after-90' branch resolved by a near-coin-flip "
+                "extra-time-and-penalties model (a small, fixed skill-based lean from the Elo gap — "
+                "not fitted to any specific tournament's shootouts, which are too few to fit reliably)."
+            )
 
         left, right = st.columns([3, 2])
         with left:
@@ -256,26 +275,41 @@ def main() -> None:
         st.markdown("### How good is the model?")
         st.markdown(
             """
-**Leave-one-out backtest** on historical WC + qualifier matches (ensemble = xG/Dixon-Coles + Elo, 50/50):
+**Leave-one-out backtest** on all 96 WC 2026 matches + 324 qualifiers (ensemble = xG/Dixon-Coles + Elo, 50/50):
 
 | Metric | Value |
 |---|---|
-| Ensemble RPS | **0.1481** |
-| Ensemble log-loss | **0.8354** |
-| Top-1 accuracy | **69%** |
+| Ensemble RPS | **0.1415** |
+| Ensemble log-loss | **0.7962** |
+| Top-1 accuracy | **67%** |
 
 **Bootstrap confidence intervals** (10 000 resamples):
 
-- Ensemble vs Naive baseline: strongly significant improvement (P ≈ 0.99)
-- Ensemble vs Full xG model: ΔRPS ≈ −0.0125, 95% CI ≈ [−0.023, −0.002], P ≈ 0.99
-- Ensemble vs FIFA-only: significant improvement
+- Ensemble vs Naive baseline: strongly significant improvement (P = 1.000, +36.7% RPS)
+- Ensemble vs Full xG model: ΔRPS = −0.0150, 95% CI [−0.0227, −0.0071], P = 1.000
+- Ensemble vs FIFA-only (via Full model): suggestive but not conclusive, P = 0.961
 
 The ensemble is a statistically significant improvement over both the naive baseline and the
-FIFA-only prior. It also edges the standalone xG and standalone Elo models, combining the
-strengths of form-based xG ratings with the historical-calibration of Elo.
+full xG model. On the fuller, knockout-inclusive dataset, plain Elo alone now has a lower point-
+estimate RPS than the 50/50 blend — but a leakage-free (nested) re-tune of the blend weight
+did **not** clear 95% significance (P = 0.948), so the ensemble ships at 50/50, unchanged.
 
-**Hyperparameter tuning** confirmed the defaults (α = 0.05, FIFA scale = 1.0) sit at or near the
-RPS minimum — no further gains available from regularization alone.
+**Out-of-sample validation** — the real 2026 World Cup knockout stage: predicting all 24
+Round-of-32-through-Round-of-16 matches with a model trained only on data available *before*
+each match (strict chronological cutoff, no leave-one-out shortcuts):
+
+| Metric | Value |
+|---|---|
+| Top-1 accuracy | **79% (19/24)** |
+| RPS improvement vs naive | **+45.1%** |
+
+4 of the 5 misses were 90-minute draws that went to penalty shootouts — the model's favorite
+actually won 3 of those 4 shootouts, so most of what reads as "error" is really the model having
+no representation of the shootout branch. A thin, fixed-parameter advancement layer for that
+case is available via the "Knockout tie" toggle above.
+
+**Hyperparameter tuning**, re-run on the 96-match dataset, confirmed the defaults
+(α = 0.05, FIFA scale = 1.0) still sit near the RPS minimum on a flat surface.
 """
         )
 

@@ -109,6 +109,13 @@ class TestScorelineGrid:
 # ---------------------------------------------------------------------------
 
 class TestWeightExtremes:
+    def test_default_weight_is_fifty_fifty(self):
+        """Pins the shipped default. Re-tuned via the nested-LOO protocol in
+        build_eval.py in 2026-07: the point estimate favored more Elo weight,
+        but the gain was not statistically significant (P=0.948, 95% CI
+        [-0.0133, +0.0014]) — see docs/METHODOLOGY.md sec.6. Retained 50/50."""
+        assert EnsemblePredictor().weight == 0.5
+
     def test_weight_1_equals_pure_dixon_coles(self, synthetic_matches):
         """weight=1.0: wdl must match the Dixon-Coles grid_summary output."""
         model = EnsemblePredictor(weight=1.0).fit(synthetic_matches)

@@ -7,13 +7,17 @@ import pytest
 from footy.evaluate.backtest import (
     actual_outcome,
     apply_draw_scalar,
+    blend_probs,
     bootstrap_ci,
+    fit_blend_weight,
     fit_draw_scalar,
     naive_baseline,
+    nested_blend_predictions,
     paired_bootstrap,
     per_match_rps,
     rps,
     score,
+    temporal_backtest,
 )
 
 # ---------------------------------------------------------------------------
@@ -353,3 +357,174 @@ class TestDrawScalar:
         rps_base = per_match_rps(preds, actuals).mean()
         rps_cal = per_match_rps(apply_draw_scalar(preds, k), actuals).mean()
         assert rps_cal <= rps_base + 1e-9
+
+
+# ---------------------------------------------------------------------------
+# blend_probs / fit_blend_weight / nested_blend_predictions
+# ---------------------------------------------------------------------------
+
+class TestBlendProbs:
+    def test_w_one_returns_a(self):
+        p_a = np.array([0.7, 0.2, 0.1])
+        p_b = np.array([0.1, 0.2, 0.7])
+        np.testing.assert_allclose(blend_probs(p_a, p_b, 1.0), p_a)
+
+    def test_w_zero_returns_b(self):
+        p_a = np.array([0.7, 0.2, 0.1])
+        p_b = np.array([0.1, 0.2, 0.7])
+        np.testing.assert_allclose(blend_probs(p_a, p_b, 0.0), p_b)
+
+    def test_sums_to_one_2d(self):
+        p_a = np.array([[0.6, 0.3, 0.1], [0.2, 0.3, 0.5]])
+        p_b = np.array([[0.2, 0.3, 0.5], [0.6, 0.3, 0.1]])
+        out = blend_probs(p_a, p_b, 0.3)
+        np.testing.assert_allclose(out.sum(axis=1), np.ones(2))
+
+    def test_midpoint(self):
+        p_a = np.array([1.0, 0.0, 0.0])
+        p_b = np.array([0.0, 0.0, 1.0])
+        np.testing.assert_allclose(blend_probs(p_a, p_b, 0.5), [0.5, 0.0, 0.5])
+
+
+class TestFitBlendWeight:
+    def test_recovers_w_one_when_a_is_perfect(self):
+        """p_a is a one-hot on the true outcome; p_b is uniform noise -> w* should favor a."""
+        actuals = np.array([0, 1, 2] * 10)
+        p_a = np.eye(3)[actuals].astype(float)
+        p_b = np.tile([1 / 3, 1 / 3, 1 / 3], (30, 1))
+        w = fit_blend_weight(p_a, p_b, actuals)
+        assert w > 0.9
+
+    def test_recovers_w_zero_when_b_is_perfect(self):
+        actuals = np.array([0, 1, 2] * 10)
+        p_a = np.tile([1 / 3, 1 / 3, 1 / 3], (30, 1))
+        p_b = np.eye(3)[actuals].astype(float)
+        w = fit_blend_weight(p_a, p_b, actuals)
+        assert w < 0.1
+
+    def test_output_within_grid_bounds(self):
+        actuals = np.array([0, 1, 2, 0, 1, 2])
+        p_a = np.tile([0.5, 0.3, 0.2], (6, 1))
+        p_b = np.tile([0.2, 0.3, 0.5], (6, 1))
+        w = fit_blend_weight(p_a, p_b, actuals)
+        assert 0.0 <= w <= 1.0
+
+    def test_identical_inputs_any_weight_equally_good(self):
+        """When p_a == p_b, every weight gives the same RPS; w* is still in [0, 1]."""
+        actuals = np.array([0, 1, 2, 1, 0])
+        p = np.tile([0.5, 0.3, 0.2], (5, 1))
+        w = fit_blend_weight(p, p, actuals)
+        assert 0.0 <= w <= 1.0
+
+
+class TestNestedBlendPredictions:
+    def test_output_shape(self):
+        actuals = np.array([0, 1, 2, 0, 1, 2])
+        p_a = np.tile([0.5, 0.3, 0.2], (6, 1))
+        p_b = np.tile([0.2, 0.3, 0.5], (6, 1))
+        out = nested_blend_predictions(p_a, p_b, actuals)
+        assert out.shape == (6, 3)
+
+    def test_rows_sum_to_one(self):
+        actuals = np.array([0, 1, 2, 0, 1, 2])
+        p_a = np.tile([0.5, 0.3, 0.2], (6, 1))
+        p_b = np.tile([0.2, 0.3, 0.5], (6, 1))
+        out = nested_blend_predictions(p_a, p_b, actuals)
+        np.testing.assert_allclose(out.sum(axis=1), np.ones(6))
+
+    def test_approaches_global_blend_on_large_homogeneous_data(self):
+        """With many repeats of the same (p_a, p_b, actual) triple, leaving one
+        out barely perturbs the empirical outcome distribution, so the nested
+        weight per fold should be close to the global weight fit on all rows."""
+        n_cycles = 80
+        actuals = np.tile([0, 1, 2], n_cycles)
+        p_a = np.tile([0.6, 0.25, 0.15], (3 * n_cycles, 1))
+        p_b = np.tile([0.15, 0.25, 0.6], (3 * n_cycles, 1))
+        w_global = fit_blend_weight(p_a, p_b, actuals)
+        expected = blend_probs(p_a, p_b, w_global)
+        nested = nested_blend_predictions(p_a, p_b, actuals)
+        np.testing.assert_allclose(nested, expected, atol=0.01)
+
+
+# ---------------------------------------------------------------------------
+# temporal_backtest
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def chronological_matches() -> pd.DataFrame:
+    """16 matches across 4 teams, strictly increasing dates, real xG signal."""
+    rng = np.random.default_rng(1)
+    pairs = [
+        ("Alpha", "Beta"), ("Gamma", "Delta"), ("Beta", "Gamma"), ("Delta", "Alpha"),
+        ("Alpha", "Gamma"), ("Beta", "Delta"), ("Gamma", "Alpha"), ("Delta", "Beta"),
+        ("Alpha", "Delta"), ("Beta", "Alpha"), ("Gamma", "Beta"), ("Delta", "Gamma"),
+        ("Alpha", "Beta"), ("Gamma", "Delta"), ("Beta", "Gamma"), ("Delta", "Alpha"),
+    ]
+    hg = rng.integers(0, 4, size=len(pairs)).tolist()
+    ag = rng.integers(0, 4, size=len(pairs)).tolist()
+    hx = rng.uniform(0.3, 2.5, size=len(pairs)).tolist()
+    ax = rng.uniform(0.3, 2.5, size=len(pairs)).tolist()
+    dates = [f"2024-{(i // 28) + 1:02d}-{(i % 28) + 1:02d}T12:00:00+00:00" for i in range(len(pairs))]
+    return pd.DataFrame({
+        "match_id": [f"m{i}" for i in range(len(pairs))],
+        "date": dates,
+        "season_id": ["s1"] * len(pairs),
+        "home": [p[0] for p in pairs],
+        "away": [p[1] for p in pairs],
+        "home_goals": hg,
+        "away_goals": ag,
+        "home_xg": hx,
+        "away_xg": ax,
+    })
+
+
+class TestTemporalBacktest:
+    def test_output_shapes(self, chronological_matches):
+        eval_matches = chronological_matches.iloc[8:]
+        preds, actuals = temporal_backtest(
+            eval_matches, chronological_matches, weight=0.5, alpha=0.5, fifa=None, fifa_scale=1.0,
+        )
+        assert preds.shape == (len(eval_matches), 3)
+        assert actuals.shape == (len(eval_matches),)
+
+    def test_rows_sum_to_one(self, chronological_matches):
+        eval_matches = chronological_matches.iloc[8:]
+        preds, _ = temporal_backtest(
+            eval_matches, chronological_matches, weight=0.5, alpha=0.5, fifa=None, fifa_scale=1.0,
+        )
+        np.testing.assert_allclose(preds.sum(axis=1), np.ones(len(eval_matches)), atol=1e-6)
+
+    def test_no_leakage_from_later_matches(self, chronological_matches):
+        """Changing the result of a LATER match must not change the prediction
+        for an EARLIER one, since training is strictly before the eval date."""
+        eval_matches = chronological_matches.iloc[[8]]  # predict the 9th match only
+        preds_before, _ = temporal_backtest(
+            eval_matches, chronological_matches, weight=0.5, alpha=0.5, fifa=None, fifa_scale=1.0,
+        )
+
+        mutated = chronological_matches.copy()
+        # Flip the result of the LAST match (chronologically after the eval match)
+        last = mutated.index[-1]
+        mutated.loc[last, "home_goals"], mutated.loc[last, "away_goals"] = 9, 0
+        mutated.loc[last, "home_xg"], mutated.loc[last, "away_xg"] = 9.0, 0.0
+
+        preds_after, _ = temporal_backtest(
+            eval_matches, mutated, weight=0.5, alpha=0.5, fifa=None, fifa_scale=1.0,
+        )
+        np.testing.assert_allclose(preds_before, preds_after, atol=1e-9)
+
+    def test_neutral_symmetry(self, chronological_matches):
+        """Neutral-venue prediction for (A, B) is the reverse of (B, A)."""
+        eval_matches = chronological_matches.iloc[8:9].copy()
+        home, away = eval_matches.iloc[0]["home"], eval_matches.iloc[0]["away"]
+        reversed_row = eval_matches.copy()
+        reversed_row.iloc[0, reversed_row.columns.get_loc("home")] = away
+        reversed_row.iloc[0, reversed_row.columns.get_loc("away")] = home
+
+        preds_fwd, _ = temporal_backtest(
+            eval_matches, chronological_matches, weight=0.5, alpha=0.5, fifa=None, fifa_scale=1.0,
+        )
+        preds_rev, _ = temporal_backtest(
+            reversed_row, chronological_matches, weight=0.5, alpha=0.5, fifa=None, fifa_scale=1.0,
+        )
+        np.testing.assert_allclose(preds_fwd[0], preds_rev[0][::-1], atol=1e-6)

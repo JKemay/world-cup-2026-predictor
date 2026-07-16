@@ -23,11 +23,14 @@ from footy.config import DATA_DIR, PROJECT_ROOT, WC_SEASON_ID  # noqa: E402
 from footy.evaluate.backtest import (  # noqa: E402
     actual_outcome,
     apply_draw_scalar,
+    blend_probs,
     bootstrap_ci,
+    fit_blend_weight,
     fit_draw_scalar,
     leave_one_out,
     leave_one_out_ol,
     naive_baseline,
+    nested_blend_predictions,
     paired_bootstrap,
     per_match_rps,
     reliability,
@@ -150,34 +153,29 @@ def main():
     p_ens3 = (pf + pe + p_ol) / 3.0
     p_ens3 /= p_ens3.sum(axis=1, keepdims=True)
 
-    # Optimized weights — coarse grid search over 2-simplex, step 0.1
-    best_rps, best_w = 1.0, (1 / 3, 1 / 3, 1 / 3)
-    for w1 in np.arange(0.0, 1.01, 0.1):
-        for w2 in np.arange(0.0, 1.01 - w1, 0.1):
-            w3 = 1.0 - w1 - w2
-            if w3 < -1e-9:
-                continue
-            p_blend = w1 * pf + w2 * pe + w3 * p_ol
-            p_blend /= p_blend.sum(axis=1, keepdims=True)
-            r = score(p_blend, af)["rps"]
-            if r < best_rps:
-                best_rps, best_w = r, (w1, w2, w3)
-    p_ens_opt = best_w[0] * pf + best_w[1] * pe + best_w[2] * p_ol
-    p_ens_opt /= p_ens_opt.sum(axis=1, keepdims=True)
-    print(f"Optimal blend weights: DC={best_w[0]:.2f} Elo={best_w[1]:.2f} OL={best_w[2]:.2f}")
+    # DC/Elo blend weight — in-sample selection (optimistic) vs nested-LOO
+    # (honest: the weight for match i is never fit on match i). See
+    # docs/METHODOLOGY.md sec.6 for why the prior in-sample simplex search
+    # here was replaced with this leakage-free protocol.
+    w_star = fit_blend_weight(pf, pe, af)
+    p_ens_tuned_insample = blend_probs(pf, pe, w_star)
+    p_ens_nested = nested_blend_predictions(pf, pe, af)
+    print(f"Blend weight on Dixon-Coles — in-sample selected: {w_star:.2f} "
+          f"(optimistic; same set tunes & scores)")
 
     # ------------------------------------------------------------------
     # Comparison table
     # ------------------------------------------------------------------
     table = {
-        "Ensemble (xG + Elo)": score(p_ens, a_ens),
+        "Ensemble (xG + Elo, shipped 50/50)": score(p_ens, a_ens),
         "Ensemble + draw cal": score(p_ens_cal, a_ens),
         "Ensemble (bivariate + draw cal)": score(p_ens_bp_cal, a_ens),
         "Full (xG + FIFA + form)": score(pf, af),
         "Elo benchmark": score(pe, ae),
         "Ordered logit (OL)": score(p_ol, a_ol),
         "Ensemble 1/3+1/3+1/3": score(p_ens3, af),
-        "Ensemble (optimized weights)": score(p_ens_opt, af),
+        "Ensemble (tuned w, in-sample)": score(p_ens_tuned_insample, af),
+        "Ensemble (tuned w, nested LOO)": score(p_ens_nested, af),
         "FIFA-only": score(pq, aq),
         "Naive base-rate": score(pn, an),
     }
@@ -186,7 +184,7 @@ def main():
     for name, s in table.items():
         print(f"{name:<36}{s['log_loss']:>10.4f}{s['rps']:>8.4f}{s['accuracy']*100:>7.0f}%")
 
-    ens = table["Ensemble (xG + Elo)"]
+    ens = table["Ensemble (xG + Elo, shipped 50/50)"]
     full = table["Full (xG + FIFA + form)"]
     fo = table["FIFA-only"]
     nb = table["Naive base-rate"]
@@ -199,7 +197,7 @@ def main():
 
     print(f"\nDraws correct — OL: {draws_correct(p_ol, a_ol)}/{n_draws}  "
           f"| 3-way equal: {draws_correct(p_ens3, af)}/{n_draws}  "
-          f"| Optimized: {draws_correct(p_ens_opt, af)}/{n_draws}")
+          f"| Tuned (nested): {draws_correct(p_ens_nested, af)}/{n_draws}")
 
     # ------------------------------------------------------------------
     # Statistical significance (paired bootstrap, N=10 000 resamples)
@@ -269,19 +267,24 @@ def main():
           f"P(cal better)={diff_cal['p_a_better']:.3f}")
     print(f"    -> {cal_interp}")
 
-    rps_ens_opt = per_match_rps(p_ens_opt, af)
-    diff_opt_ens = paired_bootstrap(rps_ens_opt, rps_ens, n_boot=N_BOOT, seed=SEED)
-    opt_straddles = diff_opt_ens["lo"] < 0 < diff_opt_ens["hi"]
-    if opt_straddles:
-        opt_interp = "not statistically distinguishable on this sample"
-    elif diff_opt_ens["mean_diff"] < 0:
-        opt_interp = "Optimized blend significantly better"
+    # Blend-weight retune decision: nested-LOO (honest) tuned ensemble vs the
+    # shipped fixed 50/50. Gate: ships only if this clears 95% two-sided
+    # significance (CI excludes zero) AND doesn't regress the temporal
+    # out-of-sample knockout backtest (see backtest_temporal.py). See
+    # docs/METHODOLOGY.md sec.6 and AGENTS.md for the full writeup either way.
+    rps_ens_nested = per_match_rps(p_ens_nested, af)
+    diff_tuned_ens = paired_bootstrap(rps_ens_nested, rps_ens, n_boot=N_BOOT, seed=SEED)
+    tuned_straddles = diff_tuned_ens["lo"] < 0 < diff_tuned_ens["hi"]
+    if tuned_straddles:
+        tuned_interp = "not statistically distinguishable on this sample -> keep shipped 50/50"
+    elif diff_tuned_ens["mean_diff"] < 0:
+        tuned_interp = "Tuned weight significantly better -> see backtest_temporal.py before shipping"
     else:
-        opt_interp = "Ensemble (xG+Elo) significantly better"
-    print(f"  Opt blend vs Ens      : mean ΔRPS {diff_opt_ens['mean_diff']:+.4f}  "
-          f"95% CI [{diff_opt_ens['lo']:+.4f}, {diff_opt_ens['hi']:+.4f}]  "
-          f"P(Opt better)={diff_opt_ens['p_a_better']:.3f}")
-    print(f"    -> {opt_interp}")
+        tuned_interp = "Shipped 50/50 significantly better"
+    print(f"  Tuned(nested) vs Ens  : mean ΔRPS {diff_tuned_ens['mean_diff']:+.4f}  "
+          f"95% CI [{diff_tuned_ens['lo']:+.4f}, {diff_tuned_ens['hi']:+.4f}]  "
+          f"P(Tuned better)={diff_tuned_ens['p_a_better']:.3f}")
+    print(f"    -> {tuned_interp}")
 
     # ------------------------------------------------------------------
     # Calibration for the ensemble model

@@ -62,6 +62,54 @@ def fit_draw_scalar(preds: np.ndarray, actuals: np.ndarray, bounds: tuple = (0.5
     return float(result.x)
 
 
+def blend_probs(p_a: np.ndarray, p_b: np.ndarray, w: float) -> np.ndarray:
+    """Blend two W/D/L probability arrays: ``w * p_a + (1 - w) * p_b``, renormalized.
+
+    Works on shape ``(3,)`` or ``(N, 3)``.
+    """
+    out = w * p_a + (1.0 - w) * p_b
+    if out.ndim == 1:
+        return out / out.sum()
+    return out / out.sum(axis=1, keepdims=True)
+
+
+def fit_blend_weight(p_a: np.ndarray, p_b: np.ndarray, actuals: np.ndarray,
+                     grid: np.ndarray | None = None) -> float:
+    """Select the blend weight ``w`` (on ``p_a``) minimizing mean RPS over a grid.
+
+    In-sample selection — the same predictions used to pick ``w`` are used to
+    score it here, so this is optimistic. Use :func:`nested_blend_predictions`
+    for an honest, leakage-free estimate of blend performance.
+    """
+    if grid is None:
+        grid = np.linspace(0.0, 1.0, 21)
+    best_rps, best_w = np.inf, float(grid[0])
+    for w in grid:
+        r = score(blend_probs(p_a, p_b, float(w)), actuals)["rps"]
+        if r < best_rps:
+            best_rps, best_w = r, float(w)
+    return best_w
+
+
+def nested_blend_predictions(p_a: np.ndarray, p_b: np.ndarray, actuals: np.ndarray,
+                             grid: np.ndarray | None = None) -> np.ndarray:
+    """Honest (nested-LOO) blend predictions: never scores a match with a weight
+
+    that saw that match. For each row ``i``, the blend weight is refit on every
+    *other* row, then applied to predict row ``i``. This reports the performance
+    of the *procedure* "tune the weight on available data," not the performance
+    of a weight that has already seen the answer.
+    """
+    n = len(actuals)
+    preds = np.empty_like(p_a, dtype=float)
+    idx = np.arange(n)
+    for i in range(n):
+        mask = idx != i
+        w_i = fit_blend_weight(p_a[mask], p_b[mask], actuals[mask], grid=grid)
+        preds[i] = blend_probs(p_a[i], p_b[i], w_i)
+    return preds
+
+
 def leave_one_out(eval_matches: pd.DataFrame, all_matches: pd.DataFrame | None = None,
                   *, alpha: float, fifa: dict, fifa_scale: float, team_effects: bool = True,
                   goals_fallback: bool = False, sos_weighting: bool = False,
@@ -156,6 +204,40 @@ def leave_one_out_ol(
         preds.append(p)
         actuals.append(actual_outcome(int(row["home_goals"]), int(row["away_goals"])))
 
+    return np.array(preds), np.array(actuals)
+
+
+def temporal_backtest(eval_matches: pd.DataFrame, all_matches: pd.DataFrame, *,
+                      weight: float, alpha: float, fifa: dict, fifa_scale: float,
+                      team_effects: bool = True, neutral: bool = True
+                      ) -> tuple[np.ndarray, np.ndarray]:
+    """Strict chronological out-of-sample backtest.
+
+    Unlike :func:`leave_one_out` (which trains on everything except the held-out
+    row, including matches *after* it), this trains each prediction on only the
+    matches with an earlier ``date`` — the honest test of genuine forecasting.
+
+    If ``neutral``, home-advantage is cancelled by averaging the home/away
+    orientations of the prediction (used for knockout-stage neutral-venue play).
+    """
+    from footy.ratings.ensemble import EnsemblePredictor
+
+    preds, actuals = [], []
+    dates = pd.to_datetime(all_matches["date"], utc=True)
+    for _, row in eval_matches.iterrows():
+        cutoff = pd.to_datetime(row["date"], utc=True)
+        train = all_matches[dates < cutoff]
+        model = EnsemblePredictor(alpha=alpha, fifa=fifa, fifa_scale=fifa_scale,
+                                  team_effects=team_effects, weight=weight).fit(train)
+        if neutral:
+            fwd = model.wdl(row["home"], row["away"])
+            rev = model.wdl(row["away"], row["home"])
+            p = np.array([(fwd[0] + rev[2]) / 2, (fwd[1] + rev[1]) / 2, (fwd[2] + rev[0]) / 2])
+            p = p / p.sum()
+        else:
+            p = model.wdl(row["home"], row["away"])
+        preds.append(p)
+        actuals.append(actual_outcome(int(row["home_goals"]), int(row["away_goals"])))
     return np.array(preds), np.array(actuals)
 
 

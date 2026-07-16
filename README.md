@@ -40,9 +40,10 @@ See also: [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for full modeling rationale
 | Evaluation harness (LOO, RPS, log-loss) | `footy/evaluate/` | ✅ Full +20.5% RPS vs naive |
 | Qualifier data pull | `pull_qualifiers.py` | ✅ ~10 games/team |
 | Hyperparameter tuning | `tune.py` | ✅ defaults re-validated on 96-match dataset |
-| Elo benchmark | `footy/ratings/elo.py` | ✅ edges the ensemble on knockout data (RPS 0.135 vs 0.142) |
-| **Ensemble (xG + Elo) — shipped** | `footy/ratings/ensemble.py` | ✅ **significantly beats the xG model (P=0.98)** |
-| **Out-of-sample knockout validation** | `docs/METHODOLOGY.md` | ✅ **79% top-1 on 24 real 2026 WC knockout matches** |
+| Elo benchmark | `footy/ratings/elo.py` | ✅ edges the ensemble on knockout data (RPS 0.135 vs 0.142; not yet significant, P=0.948) |
+| **Ensemble (xG + Elo) — shipped** | `footy/ratings/ensemble.py` | ✅ **significantly beats the full xG model (P=1.000)** |
+| **Out-of-sample knockout validation** | `backtest_temporal.py` | ✅ **79% top-1 on 24 real 2026 WC knockout matches** |
+| Penalty-shootout / advancement layer | `footy/ratings/shootout.py` | ✅ opt-in, fixed a priori (not fitted to n=4 shootouts) |
 | Streamlit dashboard | `app/streamlit_app.py` | ✅ pick any fixture → live grid, [deployed](https://world-cup-2026-ml.streamlit.app) |
 
 ## Results
@@ -63,7 +64,7 @@ See also: [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for full modeling rationale
 - **Ensemble vs Full:** ΔRPS = −0.0150, 95% CI [−0.0227, −0.0071], P(Ensemble better) = **1.000** — **statistically significant**. Averaging the xG/Dixon-Coles model with the Elo model beats either alone, because the two capture *orthogonal* signal (shot quality vs goal-based dynamic form). This is the shipped predictor.
 - **Ensemble vs Naive:** ΔRPS = −0.0820, 95% CI [−0.1096, −0.0554], P = **1.000** — **+36.7% RPS / +24.4% log-loss**.
 - **Full vs FIFA-only:** ΔRPS = −0.0049, 95% CI [−0.0103, +0.0005], P = 0.961 — **not distinguishable** at 95% confidence.
-- **Elo vs Ensemble on knockout-heavy data:** with the tournament's knockout matches folded in, plain Elo (RPS 0.1354) now edges the 50/50 ensemble (0.1415) — the xG half's contribution shrinks in lower-event knockout football. Open item: re-tune the blend weight (see [AGENTS.md](AGENTS.md)).
+- **Elo vs Ensemble on knockout-heavy data — investigated, 50/50 retained:** with the tournament's knockout matches folded in, plain Elo (RPS 0.1354) now edges the 50/50 ensemble (0.1415). A leakage-free (nested-LOO) re-tune of the blend weight confirms the point-estimate gain but doesn't clear 95% significance (ΔRPS −0.0062, 95% CI [−0.0133, +0.0014], P=0.948) — so the ensemble ships unchanged at 50/50. See [AGENTS.md](AGENTS.md) and `docs/METHODOLOGY.md` §6–7 for the full writeup.
 
 **Key narrative:** on WC-only data (~2 games/team) the event model was −3.0% RPS vs the FIFA baseline — fitting noise. Qualifier data (~10 games/team) flipped that to a real edge, and benchmarking against **Elo** exposed the deeper lesson — a simple goal-based rating rivals the sophisticated xG model, because xG throws away matches with no shot data. The resolution: **ensemble the two**, which is a statistically significant gain (P=1.000) and is the shipped model. The scoreline grid still comes from the xG model (Elo has none); the W/D/L blends both.
 
@@ -73,9 +74,11 @@ See also: [docs/METHODOLOGY.md](docs/METHODOLOGY.md) for full modeling rationale
 
 Cross-validation on historical data is a useful sanity check, but it's not the same
 claim as **genuine prediction of matches that hadn't happened yet**. This model got
-that test: all 24 matches of the real **2026 World Cup knockout stage** (Round of 32
-through the Final) were predicted using a model trained **only on data available
-before each match** — a strict temporal backtest with zero lookahead.
+that test: all 24 matches of the real **2026 World Cup knockout stage played so far**
+(Round of 32 and Round of 16 — Quarterfinals onward hadn't been played at the time of
+this analysis) were predicted using a model trained **only on data available before
+each match** — a strict temporal backtest with zero lookahead, implemented in
+`backtest_temporal.py`.
 
 | Metric | Result |
 |---|---|
@@ -84,7 +87,7 @@ before each match** — a strict temporal backtest with zero lookahead.
 | Log-loss | 0.7148 |
 | **RPS improvement vs naive baseline** | **+45.1%** |
 | Round of 32 accuracy | 13/16 (81%) |
-| Round of 16 → Final accuracy | 6/8 (75%) |
+| Round of 16 accuracy | 6/8 (75%) |
 
 Of the 5 games the model's favorite didn't win outright, **4 were 90-minute draws
 that went to penalty shootouts** — and the model's pick advanced on penalties in 3 of
@@ -92,6 +95,15 @@ those. Only one game (Norway's win over Brazil) was a genuine wrong-winner call.
 model's average favorite carried 54% confidence but won 79% of the time — a sign the
 model is honestly *underconfident* rather than overconfident, a healthier failure
 mode than the reverse.
+
+Since the core model only predicts 90-minute outcomes, a thin **penalty-shootout
+advancement layer** (`footy/ratings/shootout.py`) fills that gap: a fixed,
+a-priori-parameterized near-coin-flip model (not fitted to the tournament's small
+number of real shootouts) that turns W/D/L into "who advances." A confirmatory rerun
+of this same temporal protocol with the blend weight shifted toward Elo (`weight=0.0`)
+scores even better on these 24 matches (RPS 0.1209 vs 0.1316) — consistent with, but
+not sufficient on its own to overturn, the "keep 50/50" decision above, which was
+gated on a more statistically powered 96-match test.
 
 ![Model analysis: calibration, biggest surprises, attack/defense landscape](model_analysis.png)
 
@@ -114,8 +126,9 @@ python3 build_xg.py            # 4. train xG on all shots (WC + qualifiers)
 python3 build_ratings.py       # 5. fit ratings + scoreline grid -> france_iraq_grid.png
 python3 build_eval.py          # 6. LOO backtest: trains on all data, evaluates on WC
 python3 tune.py                # 7. grid search over alpha × fifa_scale -> tune_alpha_fifa.png
-python3 analyze_results.py     # 8. 3-panel analysis -> model_analysis.png
-streamlit run app/streamlit_app.py   # 9. interactive dashboard (any fixture -> live grid)
+python3 backtest_temporal.py   # 8. out-of-sample knockout backtest (see Out-of-sample validation)
+python3 analyze_results.py     # 9. 3-panel analysis -> model_analysis.png
+streamlit run app/streamlit_app.py   # 10. interactive dashboard (any fixture -> live grid)
 ```
 
 The dashboard reads a committed snapshot (`app/match_table.csv`), so it deploys to
